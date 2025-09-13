@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Tips - Genius Tips</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo" id="logo">Genius Tips</h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="contact.html" class="nav-link">Contact Us</a>
+                <a href="privacy.html" class="nav-link">Privacy Policy</a>
+                <a href="terms.html" class="nav-link">Terms & Conditions</a>
+                <a href="#" class="nav-link" onclick="logout()" id="logoutBtn" style="display: none;">Logout</a>
+            </nav>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="tips-page">
+                <!-- Back Button -->
+                <a href="index.html" class="back-btn">← Back to Home</a>
+                
+                <!-- Tips Header -->
+                <div class="tips-header">
+                    <h2 id="pageTitle">Tips</h2>
+                </div>
+
+                <!-- Tips Container -->
+                <div id="tipsContainer">
+                    <!-- Tips will be loaded here dynamically -->
+                </div>
+
+                <!-- Admin Panel -->
+                <div id="adminPanel" class="admin-panel" style="display: none;">
+                    <h3>Admin Panel - Add New Tip</h3>
+                    <form id="addTipForm">
+                        <div class="tip-form">
+                            <div class="form-group" id="singleDateGroup">
+                                <label for="date">Date:</label>
+                                <input type="date" id="date" name="date" required>
+                            </div>
+                            <div class="form-group" id="dateRangeGroup" style="display: none;">
+                                <label for="startDate">Start Date:</label>
+                                <input type="date" id="startDate" name="startDate">
+                            </div>
+                            <div class="form-group" id="endDateGroup" style="display: none;">
+                                <label for="endDate">End Date:</label>
+                                <input type="date" id="endDate" name="endDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="match">Match:</label>
+                                <input type="text" id="match" name="match" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="league">League:</label>
+                                <input type="text" id="league" name="league" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="time">Time:</label>
+                                <input type="text" id="time" name="time" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="prediction">Prediction:</label>
+                                <input type="text" id="prediction" name="prediction" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="odds">Odds:</label>
+                                <input type="text" id="odds" name="odds" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Add Tip</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAdminModal()">&times;</span>
+            <h2>Admin Login</h2>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hidden Admin Access - Double click on logo to access -->
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Genius Tips. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Load tips page when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTipsPage();
+        });
+    </script>
+</body>
+</html>
