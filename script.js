@@ -493,12 +493,50 @@ function toggleMobileMenu() {
     mobileNav.classList.toggle('active');
 }
 
-// Close mobile menu when clicking outside
+// Add touch event support for mobile menu
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    
+    if (mobileMenuBtn) {
+        // Add touch event for better mobile support
+        mobileMenuBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            toggleMobileMenu();
+        });
+        
+        // Also keep click event for desktop
+        mobileMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleMobileMenu();
+        });
+    }
+});
+
+// Close mobile menu when clicking outside or on links
 document.addEventListener('click', function(event) {
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const mobileNav = document.querySelector('.mobile-nav');
     
     if (mobileMenuBtn && mobileNav && 
+        !mobileMenuBtn.contains(event.target) && 
+        !mobileNav.contains(event.target)) {
+        mobileMenuBtn.classList.remove('active');
+        mobileNav.classList.remove('active');
+    }
+    
+    // Close menu when clicking on mobile nav links
+    if (event.target.classList.contains('nav-link') && mobileNav.classList.contains('active')) {
+        mobileMenuBtn.classList.remove('active');
+        mobileNav.classList.remove('active');
+    }
+});
+
+// Close mobile menu on touch outside
+document.addEventListener('touchstart', function(event) {
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileNav = document.querySelector('.mobile-nav');
+    
+    if (mobileMenuBtn && mobileNav && mobileNav.classList.contains('active') &&
         !mobileMenuBtn.contains(event.target) && 
         !mobileNav.contains(event.target)) {
         mobileMenuBtn.classList.remove('active');
