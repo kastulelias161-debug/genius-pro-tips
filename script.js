@@ -16,6 +16,10 @@ const ADMIN_CREDENTIALS = {
 // Check if user is admin
 let isAdmin = false;
 
+// Auto-logout timer (10 minutes = 600,000 milliseconds)
+let adminLogoutTimer = null;
+const ADMIN_SESSION_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+
 // Secret admin access key combination
 let adminKeySequence = [];
 const ADMIN_SECRET_KEY = ['k', 'a', 's', 't', 'u', 'l']; // Secret key: "kastul"
@@ -37,7 +41,30 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeEventListeners();
     setupSecretAdminAccess();
     setupRealtimeUpdates();
+    setupAdminActivityDetection();
 });
+
+// Setup admin activity detection to reset logout timer
+function setupAdminActivityDetection() {
+    // Reset timer on any admin activity
+    document.addEventListener('click', function() {
+        if (isAdmin) {
+            resetAdminLogoutTimer();
+        }
+    });
+    
+    document.addEventListener('keydown', function() {
+        if (isAdmin) {
+            resetAdminLogoutTimer();
+        }
+    });
+    
+    document.addEventListener('touchstart', function() {
+        if (isAdmin) {
+            resetAdminLogoutTimer();
+        }
+    });
+}
 
 // Check admin status from localStorage
 function checkAdminStatus() {
@@ -45,6 +72,28 @@ function checkAdminStatus() {
     if (adminStatus === 'true') {
         isAdmin = true;
         showAdminFeatures();
+        startAdminLogoutTimer();
+    }
+}
+
+// Start auto-logout timer
+function startAdminLogoutTimer() {
+    // Clear existing timer
+    if (adminLogoutTimer) {
+        clearTimeout(adminLogoutTimer);
+    }
+    
+    // Set new timer for 10 minutes
+    adminLogoutTimer = setTimeout(() => {
+        logout();
+        alert('Session expired. You have been automatically logged out for security.');
+    }, ADMIN_SESSION_TIMEOUT);
+}
+
+// Reset auto-logout timer (call on any admin activity)
+function resetAdminLogoutTimer() {
+    if (isAdmin) {
+        startAdminLogoutTimer();
     }
 }
 
@@ -209,8 +258,9 @@ function handleAdminLogin(e) {
         isAdmin = true;
         localStorage.setItem('isAdmin', 'true');
         showAdminFeatures();
+        startAdminLogoutTimer(); // Start auto-logout timer
         closeAdminModal();
-        alert('Admin login successful!');
+        alert('Admin login successful! You will be automatically logged out after 10 minutes of inactivity.');
     } else {
         alert('Invalid credentials. Please try again.');
     }
@@ -228,6 +278,13 @@ function showAdminFeatures() {
 function logout() {
     isAdmin = false;
     localStorage.removeItem('isAdmin');
+    
+    // Clear auto-logout timer
+    if (adminLogoutTimer) {
+        clearTimeout(adminLogoutTimer);
+        adminLogoutTimer = null;
+    }
+    
     location.reload();
 }
 
