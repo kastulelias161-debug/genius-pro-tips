@@ -94,6 +94,14 @@ function setupDesktopAdminAccess() {
 // Mobile admin access (10 taps)
 function setupMobileAdminAccess() {
     document.addEventListener('touchstart', function(event) {
+        // Don't count taps on interactive elements (buttons, links, etc.)
+        if (event.target.closest('button') || 
+            event.target.closest('a') || 
+            event.target.closest('.mobile-menu-btn') ||
+            event.target.closest('.mobile-nav')) {
+            return;
+        }
+        
         const currentTime = new Date().getTime();
         const tapLength = currentTime - lastTapTime;
         
@@ -115,6 +123,14 @@ function setupMobileAdminAccess() {
     // Also handle click events for devices that support both
     document.addEventListener('click', function(event) {
         if (isMobileDevice()) {
+            // Don't count clicks on interactive elements
+            if (event.target.closest('button') || 
+                event.target.closest('a') || 
+                event.target.closest('.mobile-menu-btn') ||
+                event.target.closest('.mobile-nav')) {
+                return;
+            }
+            
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTapTime;
             
