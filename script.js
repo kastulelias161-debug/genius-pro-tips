@@ -97,15 +97,15 @@ function setupMobileAdminAccess() {
         const currentTime = new Date().getTime();
         const tapLength = currentTime - lastTapTime;
         
-        if (tapLength < 1000 && tapLength > 0) {
-            // Consecutive tap detected
+        // Allow up to 3 seconds between taps
+        if (tapLength < 3000) {
             tapCount++;
             if (tapCount === REQUIRED_TAPS) {
                 openAdminModal();
-                tapCount = 0; // Reset counter
+                tapCount = 0; // Reset counter only after success
             }
         } else {
-            // Reset if too much time between taps
+            // Reset only if too much time between taps (more than 3 seconds)
             tapCount = 1;
         }
         
@@ -118,14 +118,15 @@ function setupMobileAdminAccess() {
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTapTime;
             
-            if (tapLength < 1000 && tapLength > 0) {
+            // Allow up to 3 seconds between taps
+            if (tapLength < 3000) {
                 tapCount++;
                 if (tapCount === REQUIRED_TAPS) {
                     openAdminModal();
-                    tapCount = 0; // Reset counter
+                    tapCount = 0; // Reset counter only after success
                 }
             } else {
-                // Reset if too much time between taps
+                // Reset only if too much time between taps (more than 3 seconds)
                 tapCount = 1;
             }
             
