@@ -26,9 +26,10 @@ function isMobileDevice() {
            window.innerWidth <= 768;
 }
 
-// Double-tap detection for mobile
+// Ten-tap detection for mobile
 let lastTapTime = 0;
 let tapCount = 0;
+const REQUIRED_TAPS = 10;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -90,20 +91,21 @@ function setupDesktopAdminAccess() {
     });
 }
 
-// Mobile admin access (double-tap)
+// Mobile admin access (10 taps)
 function setupMobileAdminAccess() {
     document.addEventListener('touchstart', function(event) {
         const currentTime = new Date().getTime();
         const tapLength = currentTime - lastTapTime;
         
-        if (tapLength < 500 && tapLength > 0) {
-            // Double-tap detected
+        if (tapLength < 1000 && tapLength > 0) {
+            // Consecutive tap detected
             tapCount++;
-            if (tapCount === 2) {
+            if (tapCount === REQUIRED_TAPS) {
                 openAdminModal();
-                tapCount = 0;
+                tapCount = 0; // Reset counter
             }
         } else {
+            // Reset if too much time between taps
             tapCount = 1;
         }
         
@@ -116,13 +118,14 @@ function setupMobileAdminAccess() {
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTapTime;
             
-            if (tapLength < 500 && tapLength > 0) {
+            if (tapLength < 1000 && tapLength > 0) {
                 tapCount++;
-                if (tapCount === 2) {
+                if (tapCount === REQUIRED_TAPS) {
                     openAdminModal();
-                    tapCount = 0;
+                    tapCount = 0; // Reset counter
                 }
             } else {
+                // Reset if too much time between taps
                 tapCount = 1;
             }
             
