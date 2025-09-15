@@ -20,6 +20,16 @@ let isAdmin = false;
 let adminKeySequence = [];
 const ADMIN_SECRET_KEY = ['k', 'a', 's', 't', 'u', 'l']; // Secret key: "kastul"
 
+// Device detection
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           window.innerWidth <= 768;
+}
+
+// Double-tap detection for mobile
+let lastTapTime = 0;
+let tapCount = 0;
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     checkAdminStatus();
@@ -48,6 +58,17 @@ function initializeEventListeners() {
 
 // Setup secret admin access
 function setupSecretAdminAccess() {
+    if (isMobileDevice()) {
+        // Mobile: Double-tap anywhere to open admin
+        setupMobileAdminAccess();
+    } else {
+        // Desktop: Keyboard typing "kastul"
+        setupDesktopAdminAccess();
+    }
+}
+
+// Desktop admin access (keyboard typing)
+function setupDesktopAdminAccess() {
     document.addEventListener('keydown', function(event) {
         // Only listen for letter keys
         if (event.key.length === 1 && event.key.match(/[a-z]/i)) {
@@ -65,6 +86,47 @@ function setupSecretAdminAccess() {
                     adminKeySequence = []; // Reset sequence
                 }
             }
+        }
+    });
+}
+
+// Mobile admin access (double-tap)
+function setupMobileAdminAccess() {
+    document.addEventListener('touchstart', function(event) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTapTime;
+        
+        if (tapLength < 500 && tapLength > 0) {
+            // Double-tap detected
+            tapCount++;
+            if (tapCount === 2) {
+                openAdminModal();
+                tapCount = 0;
+            }
+        } else {
+            tapCount = 1;
+        }
+        
+        lastTapTime = currentTime;
+    });
+    
+    // Also handle click events for devices that support both
+    document.addEventListener('click', function(event) {
+        if (isMobileDevice()) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+            
+            if (tapLength < 500 && tapLength > 0) {
+                tapCount++;
+                if (tapCount === 2) {
+                    openAdminModal();
+                    tapCount = 0;
+                }
+            } else {
+                tapCount = 1;
+            }
+            
+            lastTapTime = currentTime;
         }
     });
 }
