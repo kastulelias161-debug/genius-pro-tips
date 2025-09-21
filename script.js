@@ -33,7 +33,7 @@ function isMobileDevice() {
 // Ten-tap detection for mobile
 let lastTapTime = 0;
 let tapCount = 0;
-const REQUIRED_TAPS = 10;
+const REQUIRED_TAPS = 15; // Increased to 15 taps to prevent accidental activation
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -152,64 +152,69 @@ function setupDesktopAdminAccess() {
     });
 }
 
-// Mobile admin access (10 taps)
+// Mobile admin access (15 taps in specific area)
 function setupMobileAdminAccess() {
-    document.addEventListener('touchstart', function(event) {
-        // Don't count taps on interactive elements (buttons, links, etc.)
-        if (event.target.closest('button') || 
-            event.target.closest('a') || 
-            event.target.closest('.mobile-menu-btn') ||
-            event.target.closest('.mobile-nav')) {
-            return;
-        }
-        
-        const currentTime = new Date().getTime();
-        const tapLength = currentTime - lastTapTime;
-        
-        // Allow up to 3 seconds between taps
-        if (tapLength < 3000) {
-            tapCount++;
-            if (tapCount === REQUIRED_TAPS) {
-                openAdminModal();
-                tapCount = 0; // Reset counter only after success
-            }
-        } else {
-            // Reset only if too much time between taps (more than 3 seconds)
-            tapCount = 1;
-        }
-        
-        lastTapTime = currentTime;
-    });
+    // Only count taps in the header area to prevent accidental activation
+    const header = document.querySelector('.header');
     
-    // Also handle click events for devices that support both
-    document.addEventListener('click', function(event) {
-        if (isMobileDevice()) {
-            // Don't count clicks on interactive elements
+    if (header) {
+        header.addEventListener('touchstart', function(event) {
+            // Don't count taps on interactive elements
             if (event.target.closest('button') || 
                 event.target.closest('a') || 
                 event.target.closest('.mobile-menu-btn') ||
-                event.target.closest('.mobile-nav')) {
+                event.target.closest('.mobile-nav') ||
+                event.target.closest('.logo')) {
                 return;
             }
             
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTapTime;
             
-            // Allow up to 3 seconds between taps
-            if (tapLength < 3000) {
+            // Allow up to 2 seconds between taps (shorter window)
+            if (tapLength < 2000) {
                 tapCount++;
                 if (tapCount === REQUIRED_TAPS) {
                     openAdminModal();
                     tapCount = 0; // Reset counter only after success
                 }
             } else {
-                // Reset only if too much time between taps (more than 3 seconds)
+                // Reset if too much time between taps
                 tapCount = 1;
             }
             
             lastTapTime = currentTime;
-        }
-    });
+        });
+        
+        // Also handle click events for devices that support both
+        header.addEventListener('click', function(event) {
+            // Don't count clicks on interactive elements
+            if (event.target.closest('button') || 
+                event.target.closest('a') || 
+                event.target.closest('.mobile-menu-btn') ||
+                event.target.closest('.mobile-nav') ||
+                event.target.closest('.logo')) {
+                return;
+            }
+            
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+            
+            // Allow up to 2 seconds between taps
+            if (tapLength < 2000) {
+                tapCount++;
+                if (tapCount === REQUIRED_TAPS) {
+                    openAdminModal();
+                    tapCount = 0; // Reset counter only after success
+                }
+            } else {
+                // Reset if too much time between taps
+                tapCount = 1;
+            }
+            
+            lastTapTime = currentTime;
+        });
+    }
 }
 
 // Setup real-time updates
