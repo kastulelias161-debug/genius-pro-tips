@@ -16,9 +16,24 @@ const ADMIN_CREDENTIALS = {
 // Check if user is admin
 let isAdmin = false;
 
+// Auto-logout timer (10 minutes = 600,000 milliseconds)
+let adminLogoutTimer = null;
+const ADMIN_SESSION_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+
 // Secret admin access key combination
 let adminKeySequence = [];
 const ADMIN_SECRET_KEY = ['k', 'a', 's', 't', 'u', 'l']; // Secret key: "kastul"
+
+// Device detection
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           window.innerWidth <= 768;
+}
+
+// Ten-tap detection for mobile
+let lastTapTime = 0;
+let tapCount = 0;
+const REQUIRED_TAPS = 10;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -27,7 +42,30 @@ document.addEventListener('DOMContentLoaded', function() {
     setupSecretAdminAccess();
     setupRealtimeUpdates();
     setupSessionMonitoring();
+    setupAdminActivityDetection();
 });
+
+// Setup admin activity detection to reset logout timer
+function setupAdminActivityDetection() {
+    // Reset timer on any admin activity
+    document.addEventListener('click', function() {
+        if (isAdmin) {
+            resetAdminLogoutTimer();
+        }
+    });
+    
+    document.addEventListener('keydown', function() {
+        if (isAdmin) {
+            resetAdminLogoutTimer();
+        }
+    });
+    
+    document.addEventListener('touchstart', function() {
+        if (isAdmin) {
+            resetAdminLogoutTimer();
+        }
+    });
+}
 
 // Check admin status from sessionStorage with timeout
 function checkAdminStatus() {
@@ -42,10 +80,32 @@ function checkAdminStatus() {
         if (currentTime - parseInt(adminTimestamp) < sessionDuration) {
             isAdmin = true;
             showAdminFeatures();
+            startAdminLogoutTimer();
         } else {
             // Session expired, clear admin status
             clearAdminSession();
         }
+    }
+}
+
+// Start auto-logout timer
+function startAdminLogoutTimer() {
+    // Clear existing timer
+    if (adminLogoutTimer) {
+        clearTimeout(adminLogoutTimer);
+    }
+    
+    // Set new timer for 10 minutes
+    adminLogoutTimer = setTimeout(() => {
+        logout();
+        alert('Session expired. You have been automatically logged out for security.');
+    }, ADMIN_SESSION_TIMEOUT);
+}
+
+// Reset auto-logout timer (call on any admin activity)
+function resetAdminLogoutTimer() {
+    if (isAdmin) {
+        startAdminLogoutTimer();
     }
 }
 
@@ -60,6 +120,17 @@ function initializeEventListeners() {
 
 // Setup secret admin access
 function setupSecretAdminAccess() {
+    if (isMobileDevice()) {
+        // Mobile: Double-tap anywhere to open admin
+        setupMobileAdminAccess();
+    } else {
+        // Desktop: Keyboard typing "kastul"
+        setupDesktopAdminAccess();
+    }
+}
+
+// Desktop admin access (keyboard typing)
+function setupDesktopAdminAccess() {
     document.addEventListener('keydown', function(event) {
         // Only listen for letter keys
         if (event.key.length === 1 && event.key.match(/[a-z]/i)) {
@@ -77,6 +148,66 @@ function setupSecretAdminAccess() {
                     adminKeySequence = []; // Reset sequence
                 }
             }
+        }
+    });
+}
+
+// Mobile admin access (10 taps)
+function setupMobileAdminAccess() {
+    document.addEventListener('touchstart', function(event) {
+        // Don't count taps on interactive elements (buttons, links, etc.)
+        if (event.target.closest('button') || 
+            event.target.closest('a') || 
+            event.target.closest('.mobile-menu-btn') ||
+            event.target.closest('.mobile-nav')) {
+            return;
+        }
+        
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTapTime;
+        
+        // Allow up to 3 seconds between taps
+        if (tapLength < 3000) {
+            tapCount++;
+            if (tapCount === REQUIRED_TAPS) {
+                openAdminModal();
+                tapCount = 0; // Reset counter only after success
+            }
+        } else {
+            // Reset only if too much time between taps (more than 3 seconds)
+            tapCount = 1;
+        }
+        
+        lastTapTime = currentTime;
+    });
+    
+    // Also handle click events for devices that support both
+    document.addEventListener('click', function(event) {
+        if (isMobileDevice()) {
+            // Don't count clicks on interactive elements
+            if (event.target.closest('button') || 
+                event.target.closest('a') || 
+                event.target.closest('.mobile-menu-btn') ||
+                event.target.closest('.mobile-nav')) {
+                return;
+            }
+            
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+            
+            // Allow up to 3 seconds between taps
+            if (tapLength < 3000) {
+                tapCount++;
+                if (tapCount === REQUIRED_TAPS) {
+                    openAdminModal();
+                    tapCount = 0; // Reset counter only after success
+                }
+            } else {
+                // Reset only if too much time between taps (more than 3 seconds)
+                tapCount = 1;
+            }
+            
+            lastTapTime = currentTime;
         }
     });
 }
@@ -141,8 +272,9 @@ function handleAdminLogin(e) {
         sessionStorage.setItem('isAdmin', 'true');
         sessionStorage.setItem('adminTimestamp', timestamp.toString());
         showAdminFeatures();
+        startAdminLogoutTimer(); // Start auto-logout timer
         closeAdminModal();
-        alert('Admin login successful! Session expires in 8 hours.');
+        alert('Admin login successful! Session expires in 8 hours with 10-minute inactivity timeout.');
     } else {
         alert('Invalid credentials. Please try again.');
     }
@@ -226,6 +358,13 @@ function validateAdminAccess() {
 // Logout function
 function logout() {
     clearAdminSession();
+    
+    // Clear auto-logout timer
+    if (adminLogoutTimer) {
+        clearTimeout(adminLogoutTimer);
+        adminLogoutTimer = null;
+    }
+    
     location.reload();
 }
 
@@ -591,12 +730,50 @@ function toggleMobileMenu() {
     mobileNav.classList.toggle('active');
 }
 
-// Close mobile menu when clicking outside
+// Add touch event support for mobile menu
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    
+    if (mobileMenuBtn) {
+        // Add touch event for better mobile support
+        mobileMenuBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            toggleMobileMenu();
+        });
+        
+        // Also keep click event for desktop
+        mobileMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleMobileMenu();
+        });
+    }
+});
+
+// Close mobile menu when clicking outside or on links
 document.addEventListener('click', function(event) {
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const mobileNav = document.querySelector('.mobile-nav');
     
     if (mobileMenuBtn && mobileNav && 
+        !mobileMenuBtn.contains(event.target) && 
+        !mobileNav.contains(event.target)) {
+        mobileMenuBtn.classList.remove('active');
+        mobileNav.classList.remove('active');
+    }
+    
+    // Close menu when clicking on mobile nav links
+    if (event.target.classList.contains('nav-link') && mobileNav.classList.contains('active')) {
+        mobileMenuBtn.classList.remove('active');
+        mobileNav.classList.remove('active');
+    }
+});
+
+// Close mobile menu on touch outside
+document.addEventListener('touchstart', function(event) {
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileNav = document.querySelector('.mobile-nav');
+    
+    if (mobileMenuBtn && mobileNav && mobileNav.classList.contains('active') &&
         !mobileMenuBtn.contains(event.target) && 
         !mobileNav.contains(event.target)) {
         mobileMenuBtn.classList.remove('active');

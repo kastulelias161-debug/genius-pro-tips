@@ -99,10 +99,15 @@ body {
     padding: 1rem;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
 }
 
 .mobile-nav.active {
     display: flex;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .mobile-nav .nav-link {
