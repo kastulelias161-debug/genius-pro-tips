@@ -26,14 +26,26 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeEventListeners();
     setupSecretAdminAccess();
     setupRealtimeUpdates();
+    setupSessionMonitoring();
 });
 
-// Check admin status from localStorage
+// Check admin status from sessionStorage with timeout
 function checkAdminStatus() {
-    const adminStatus = localStorage.getItem('isAdmin');
-    if (adminStatus === 'true') {
-        isAdmin = true;
-        showAdminFeatures();
+    const adminStatus = sessionStorage.getItem('isAdmin');
+    const adminTimestamp = sessionStorage.getItem('adminTimestamp');
+    
+    if (adminStatus === 'true' && adminTimestamp) {
+        const currentTime = Date.now();
+        const sessionDuration = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+        
+        // Check if session is still valid
+        if (currentTime - parseInt(adminTimestamp) < sessionDuration) {
+            isAdmin = true;
+            showAdminFeatures();
+        } else {
+            // Session expired, clear admin status
+            clearAdminSession();
+        }
     }
 }
 
@@ -125,10 +137,12 @@ function handleAdminLogin(e) {
     
     if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
         isAdmin = true;
-        localStorage.setItem('isAdmin', 'true');
+        const timestamp = Date.now();
+        sessionStorage.setItem('isAdmin', 'true');
+        sessionStorage.setItem('adminTimestamp', timestamp.toString());
         showAdminFeatures();
         closeAdminModal();
-        alert('Admin login successful!');
+        alert('Admin login successful! Session expires in 8 hours.');
     } else {
         alert('Invalid credentials. Please try again.');
     }
@@ -142,10 +156,76 @@ function showAdminFeatures() {
     }
 }
 
+// Clear admin session
+function clearAdminSession() {
+    isAdmin = false;
+    sessionStorage.removeItem('isAdmin');
+    sessionStorage.removeItem('adminTimestamp');
+    
+    // Hide admin features
+    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (logoutBtnMobile) logoutBtnMobile.style.display = 'none';
+    
+    // Hide admin panel if visible
+    const adminPanel = document.getElementById('adminPanel');
+    if (adminPanel) adminPanel.style.display = 'none';
+}
+
+// Setup session monitoring
+function setupSessionMonitoring() {
+    // Check session validity every 5 minutes
+    setInterval(() => {
+        if (isAdmin) {
+            const adminTimestamp = sessionStorage.getItem('adminTimestamp');
+            if (adminTimestamp) {
+                const currentTime = Date.now();
+                const sessionDuration = 8 * 60 * 60 * 1000; // 8 hours
+                
+                if (currentTime - parseInt(adminTimestamp) >= sessionDuration) {
+                    clearAdminSession();
+                    alert('Admin session expired. Please login again.');
+                    location.reload();
+                }
+            }
+        }
+    }, 5 * 60 * 1000); // Check every 5 minutes
+    
+    // Clear session when browser is closed/refreshed
+    window.addEventListener('beforeunload', function() {
+        if (isAdmin) {
+            // Optional: Add warning about unsaved changes
+        }
+    });
+}
+
+// Enhanced admin validation
+function validateAdminAccess() {
+    if (!isAdmin) return false;
+    
+    const adminStatus = sessionStorage.getItem('isAdmin');
+    const adminTimestamp = sessionStorage.getItem('adminTimestamp');
+    
+    if (adminStatus !== 'true' || !adminTimestamp) {
+        clearAdminSession();
+        return false;
+    }
+    
+    const currentTime = Date.now();
+    const sessionDuration = 8 * 60 * 60 * 1000; // 8 hours
+    
+    if (currentTime - parseInt(adminTimestamp) >= sessionDuration) {
+        clearAdminSession();
+        return false;
+    }
+    
+    return true;
+}
+
 // Logout function
 function logout() {
-    isAdmin = false;
-    localStorage.removeItem('isAdmin');
+    clearAdminSession();
     location.reload();
 }
 
@@ -305,6 +385,12 @@ function setupAdminPanel(type) {
 
 // Handle add tip
 async function handleAddTip(e, type) {
+    // Validate admin access before proceeding
+    if (!validateAdminAccess()) {
+        alert('Admin access required. Please login again.');
+        return;
+    }
+    
     e.preventDefault();
     
     const formData = new FormData(e.target);
@@ -356,6 +442,12 @@ async function handleAddTip(e, type) {
 
 // Edit tip
 async function editTip(type, tipId) {
+    // Validate admin access before proceeding
+    if (!validateAdminAccess()) {
+        alert('Admin access required. Please login again.');
+        return;
+    }
+    
     try {
         const tableName = `${type}_tips`;
         const { data: tip, error: fetchError } = await supabase
@@ -424,6 +516,12 @@ async function editTip(type, tipId) {
 
 // Delete tip
 async function deleteTip(type, tipId) {
+    // Validate admin access before proceeding
+    if (!validateAdminAccess()) {
+        alert('Admin access required. Please login again.');
+        return;
+    }
+    
     if (confirm('Are you sure you want to delete this tip?')) {
         try {
             const tableName = `${type}_tips`;
