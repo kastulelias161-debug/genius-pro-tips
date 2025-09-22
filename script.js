@@ -725,13 +725,14 @@ async function editTip(type, tipId) {
             return;
         }
         
+        // Show success message only if update was successful
+        alert('Tip updated successfully!');
+        
         // Refresh display
         loadTipsPage();
         
         // Refresh dashboard stats
         loadDashboardStats();
-        
-        alert('Tip updated successfully!');
     } catch (error) {
         console.error('Error editing tip:', error);
         alert('Error editing tip. Please try again.');
