@@ -229,45 +229,44 @@
         function handleAdminLogin(e) {
             e.preventDefault();
             
-            if (!validateForm(e.target)) {
-                return;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'Kastul' && password === 'Kastul@10') {
+                isAdmin = true;
+                const timestamp = Date.now();
+                sessionStorage.setItem('isAdmin', 'true');
+                sessionStorage.setItem('adminTimestamp', timestamp.toString());
+                showAdminFeatures();
+                showAdminDashboard();
+                
+                alert('Admin login successful! Welcome to the dashboard.');
+            } else {
+                alert('Invalid credentials. Please try again.');
             }
-            
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            showLoadingState(submitButton);
-            
-            setTimeout(() => {
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                
-                if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-                    isAdmin = true;
-                    const timestamp = Date.now();
-                    sessionStorage.setItem('isAdmin', 'true');
-                    sessionStorage.setItem('adminTimestamp', timestamp.toString());
-                    showAdminFeatures();
-                    showAdminDashboard();
-                    startAdminLogoutTimer();
-                    
-                    showNotification('Admin login successful! Welcome to the dashboard.', 'success');
-                } else {
-                    showNotification('Invalid credentials. Please try again.', 'error');
-                }
-                
-                hideLoadingState(submitButton);
-            }, 1000);
         }
 
         // Show admin dashboard
         function showAdminDashboard() {
-            document.getElementById('adminLoginSection').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
+            const loginSection = document.getElementById('adminLoginSection');
+            const dashboard = document.getElementById('adminDashboard');
+            
+            if (loginSection) {
+                loginSection.style.display = 'none';
+            }
+            if (dashboard) {
+                dashboard.style.display = 'block';
+            }
             
             // Load dashboard stats
-            loadDashboardStats();
+            if (typeof loadDashboardStats === 'function') {
+                loadDashboardStats();
+            }
             
             // Load initial tips
-            loadTipsForManagement();
+            if (typeof loadTipsForManagement === 'function') {
+                loadTipsForManagement();
+            }
         }
 
         // Handle add tip from admin page
