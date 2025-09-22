@@ -58,8 +58,54 @@
 
                 <!-- Admin Panel -->
                 <div id="adminPanel" class="admin-panel" style="display: none;">
-                    <h3>Admin Panel - Add New Tip</h3>
-                    <form id="addTipForm">
+                    <!-- Admin Dashboard -->
+                    <div class="admin-dashboard">
+                        <h3>📊 Admin Dashboard</h3>
+                        <div class="dashboard-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon">⚽</div>
+                                <div class="stat-content">
+                                    <div class="stat-number" id="todayCount">0</div>
+                                    <div class="stat-label">Today Tips</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📅</div>
+                                <div class="stat-content">
+                                    <div class="stat-number" id="weeklyCount">0</div>
+                                    <div class="stat-label">Weekly Tips</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📊</div>
+                                <div class="stat-content">
+                                    <div class="stat-number" id="monthlyCount">0</div>
+                                    <div class="stat-label">Monthly Tips</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🚂</div>
+                                <div class="stat-content">
+                                    <div class="stat-number" id="trainCount">0</div>
+                                    <div class="stat-label">Train Tips</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dashboard-summary">
+                            <div class="summary-card">
+                                <h4>📈 Total Posts</h4>
+                                <div class="summary-number" id="totalCount">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>🕒 Last Updated</h4>
+                                <div class="summary-text" id="lastUpdated">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Add New Tip Section -->
+                    <div class="admin-section">
+                        <h3>➕ Add New Tip</h3>
                         <div class="tip-form">
                             <div class="form-group" id="singleDateGroup">
                                 <label for="date">Date:</label>

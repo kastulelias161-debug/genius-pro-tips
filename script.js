@@ -525,6 +525,9 @@ function setupAdminPanel(type) {
             document.getElementById('endDate').required = false;
         }
     }
+    
+    // Load dashboard stats when admin panel is shown
+    loadDashboardStats();
 }
 
 // Handle add tip
@@ -573,6 +576,9 @@ async function handleAddTip(e, type) {
         
         // Refresh display
         loadTipsPage();
+        
+        // Refresh dashboard stats
+        loadDashboardStats();
         
         // Reset form
         e.target.reset();
@@ -651,6 +657,9 @@ async function editTip(type, tipId) {
         // Refresh display
         loadTipsPage();
         
+        // Refresh dashboard stats
+        loadDashboardStats();
+        
         alert('Tip updated successfully!');
     } catch (error) {
         console.error('Error editing tip:', error);
@@ -681,11 +690,81 @@ async function deleteTip(type, tipId) {
             }
             
             loadTipsPage();
+            
+            // Refresh dashboard stats
+            loadDashboardStats();
+            
             alert('Tip deleted successfully!');
         } catch (error) {
             console.error('Error deleting tip:', error);
             alert('Error deleting tip. Please try again.');
         }
+    }
+}
+
+// Load dashboard statistics
+async function loadDashboardStats() {
+    try {
+        const tipTypes = ['today', 'weekly', 'monthly', 'train'];
+        const counts = {};
+        let totalCount = 0;
+        let lastUpdated = null;
+        
+        // Get counts for each tip type
+        for (const type of tipTypes) {
+            const tips = await getTipsData(type);
+            counts[type] = tips.length;
+            totalCount += tips.length;
+            
+            // Find the most recent tip
+            if (tips.length > 0) {
+                const latestTip = tips.reduce((latest, current) => {
+                    return new Date(current.created_at) > new Date(latest.created_at) ? current : latest;
+                });
+                
+                if (!lastUpdated || new Date(latestTip.created_at) > new Date(lastUpdated)) {
+                    lastUpdated = latestTip.created_at;
+                }
+            }
+        }
+        
+        // Update dashboard display
+        updateDashboardDisplay(counts, totalCount, lastUpdated);
+        
+    } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+        updateDashboardDisplay({today: 0, weekly: 0, monthly: 0, train: 0}, 0, null);
+    }
+}
+
+// Update dashboard display
+function updateDashboardDisplay(counts, totalCount, lastUpdated) {
+    // Update individual counts
+    document.getElementById('todayCount').textContent = counts.today || 0;
+    document.getElementById('weeklyCount').textContent = counts.weekly || 0;
+    document.getElementById('monthlyCount').textContent = counts.monthly || 0;
+    document.getElementById('trainCount').textContent = counts.train || 0;
+    
+    // Update total count
+    document.getElementById('totalCount').textContent = totalCount;
+    
+    // Update last updated time
+    const lastUpdatedElement = document.getElementById('lastUpdated');
+    if (lastUpdated) {
+        const date = new Date(lastUpdated);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+            lastUpdatedElement.textContent = 'Yesterday';
+        } else if (diffDays < 7) {
+            lastUpdatedElement.textContent = `${diffDays} days ago`;
+        } else {
+            lastUpdatedElement.textContent = date.toLocaleDateString();
+        }
+    } else {
+        lastUpdatedElement.textContent = 'No posts yet';
     }
 }
 
