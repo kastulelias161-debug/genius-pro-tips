@@ -36,7 +36,7 @@ To connect to Supabase database:
 -- Today Tips Table
 CREATE TABLE today_tips (
     id SERIAL PRIMARY KEY,
-    date TEXT NOT NULL,
+    date DATE NOT NULL,
     match TEXT NOT NULL,
     league TEXT NOT NULL,
     time TEXT NOT NULL,
@@ -84,6 +84,24 @@ CREATE TABLE train_tips (
     status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost')),
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Enable Row Level Security on all tables
+ALTER TABLE today_tips ENABLE ROW LEVEL SECURITY;
+ALTER TABLE weekly_tips ENABLE ROW LEVEL SECURITY;
+ALTER TABLE monthly_tips ENABLE ROW LEVEL SECURITY;
+ALTER TABLE train_tips ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for public read access
+CREATE POLICY "Allow public read access" ON today_tips FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON weekly_tips FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON monthly_tips FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON train_tips FOR SELECT USING (true);
+
+-- Create policies for admin full access
+CREATE POLICY "Allow admin full access" ON today_tips FOR ALL USING (true);
+CREATE POLICY "Allow admin full access" ON weekly_tips FOR ALL USING (true);
+CREATE POLICY "Allow admin full access" ON monthly_tips FOR ALL USING (true);
+CREATE POLICY "Allow admin full access" ON train_tips FOR ALL USING (true);
 ```
 
 3. Update `script.js` with your Supabase credentials:

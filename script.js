@@ -613,7 +613,8 @@ async function handleAddTip(e, type) {
         league: formData.get('league'),
         time: formData.get('time'),
         prediction: formData.get('prediction'),
-        odds: formData.get('odds')
+        odds: formData.get('odds'),
+        status: 'pending' // Default status for new tips
     };
     
     try {
@@ -699,7 +700,8 @@ async function editTip(type, tipId) {
                 league: newLeague,
                 time: newTime,
                 prediction: newPrediction,
-                odds: newOdds
+                odds: newOdds,
+                status: tip.status || 'pending' // Preserve existing status or set to pending
             })
             .eq('id', tipId);
         
@@ -1025,9 +1027,11 @@ function displayMatchResults(tips) {
 
 // Get card border class based on status
 function getCardBorderClass(status) {
-    if (status === 'won') {
+    // Handle cases where status might be null or undefined
+    const tipStatus = status || 'pending';
+    if (tipStatus === 'won') {
         return 'tip-item-won';
-    } else if (status === 'lost') {
+    } else if (tipStatus === 'lost') {
         return 'tip-item-lost';
     }
     return ''; // No special class for pending
@@ -1035,22 +1039,26 @@ function getCardBorderClass(status) {
 
 // Get status CSS class
 function getStatusClass(status) {
+    // Handle cases where status might be null or undefined
+    const tipStatus = status || 'pending';
     const classes = {
         'won': 'status-won',
         'lost': 'status-lost',
         'pending': 'status-pending'
     };
-    return classes[status] || 'status-pending';
+    return classes[tipStatus] || 'status-pending';
 }
 
 // Get status icon
 function getStatusIcon(status) {
+    // Handle cases where status might be null or undefined
+    const tipStatus = status || 'pending';
     const icons = {
         'won': '✅',
         'lost': '❌',
         'pending': '⏳'
     };
-    return icons[status] || '⏳';
+    return icons[tipStatus] || '⏳';
 }
 
 // Update match status
