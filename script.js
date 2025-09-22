@@ -691,6 +691,20 @@ async function editTip(type, tipId) {
         const newOdds = prompt('Odds:', tip.odds);
         if (newOdds === null) return;
         
+        // Ask for status update
+        const currentStatus = tip.status || 'pending';
+        const statusOptions = ['pending', 'won', 'lost'];
+        const statusText = statusOptions.map((status, index) => `${index + 1}. ${status.toUpperCase()}`).join('\n');
+        const statusChoice = prompt(`Status (${currentStatus.toUpperCase()}):\n${statusText}\n\nEnter number (1-3) or press Enter to keep current:`, '');
+        
+        let newStatus = currentStatus;
+        if (statusChoice !== null && statusChoice !== '') {
+            const choice = parseInt(statusChoice);
+            if (choice >= 1 && choice <= 3) {
+                newStatus = statusOptions[choice - 1];
+            }
+        }
+        
         // Update tip in Supabase
         const { error: updateError } = await supabase
             .from(tableName)
@@ -701,7 +715,7 @@ async function editTip(type, tipId) {
                 time: newTime,
                 prediction: newPrediction,
                 odds: newOdds,
-                status: tip.status || 'pending' // Preserve existing status or set to pending
+                status: newStatus
             })
             .eq('id', tipId);
         
@@ -1084,10 +1098,32 @@ async function updateMatchStatus(tipType, tipId, newStatus) {
             loadDashboardStats();
         }
         
+        // Refresh tips display if on tips page
+        if (typeof loadTipsPage === 'function') {
+            loadTipsPage();
+        }
+        
         alert(`Match status updated to: ${newStatus.toUpperCase()}`);
     } catch (error) {
         console.error('Error updating match status:', error);
         alert('Error updating match status. Please try again.');
+    }
+}
+
+// Quick status update function for admin
+async function quickUpdateStatus(tipType, tipId) {
+    const statusOptions = ['pending', 'won', 'lost'];
+    const statusText = statusOptions.map((status, index) => `${index + 1}. ${status.toUpperCase()}`).join('\n');
+    const choice = prompt(`Update Status:\n${statusText}\n\nEnter number (1-3):`, '');
+    
+    if (choice !== null && choice !== '') {
+        const statusIndex = parseInt(choice);
+        if (statusIndex >= 1 && statusIndex <= 3) {
+            const newStatus = statusOptions[statusIndex - 1];
+            await updateMatchStatus(tipType, tipId, newStatus);
+        } else {
+            alert('Invalid choice. Please enter 1, 2, or 3.');
+        }
     }
 }
 
@@ -1113,4 +1149,5 @@ window.deleteTip = deleteTip;
 window.loadTipsPage = loadTipsPage;
 window.toggleMobileMenu = toggleMobileMenu;
 window.updateMatchStatus = updateMatchStatus;
+window.quickUpdateStatus = quickUpdateStatus;
 window.loadMatchResultsForAdmin = loadMatchResultsForAdmin;
