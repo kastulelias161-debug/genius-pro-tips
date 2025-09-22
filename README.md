@@ -42,7 +42,7 @@ CREATE TABLE today_tips (
     time TEXT NOT NULL,
     prediction TEXT NOT NULL,
     odds TEXT NOT NULL,
-    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'draw')),
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost')),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -55,7 +55,7 @@ CREATE TABLE weekly_tips (
     time TEXT NOT NULL,
     prediction TEXT NOT NULL,
     odds TEXT NOT NULL,
-    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'draw')),
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost')),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -68,7 +68,7 @@ CREATE TABLE monthly_tips (
     time TEXT NOT NULL,
     prediction TEXT NOT NULL,
     odds TEXT NOT NULL,
-    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'draw')),
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost')),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -81,7 +81,7 @@ CREATE TABLE train_tips (
     time TEXT NOT NULL,
     prediction TEXT NOT NULL,
     odds TEXT NOT NULL,
-    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'draw')),
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost')),
     created_at TIMESTAMP DEFAULT NOW()
 );
 ```

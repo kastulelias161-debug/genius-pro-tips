@@ -463,7 +463,7 @@ function displayTips(tips, type) {
                 <h3 class="date-header">${formatDate(date)}</h3>
                 <div class="tips-for-date">
                     ${groupedTips[date].map(tip => `
-                        <div class="tip-item">
+                        <div class="tip-item ${getCardBorderClass(tip.status)}">
                             <div class="tip-header">
                                 <div class="tip-match">${tip.match}</div>
                                 <div class="tip-time">${tip.time}</div>
@@ -1011,8 +1011,6 @@ function displayMatchResults(tips) {
                                 class="btn-status btn-won" title="Mark as Won">✅</button>
                         <button onclick="updateMatchStatus('${tip.tipType}', ${tip.id}, 'lost')" 
                                 class="btn-status btn-lost" title="Mark as Lost">❌</button>
-                        <button onclick="updateMatchStatus('${tip.tipType}', ${tip.id}, 'draw')" 
-                                class="btn-status btn-draw" title="Mark as Draw">⚖️</button>
                         <button onclick="updateMatchStatus('${tip.tipType}', ${tip.id}, 'pending')" 
                                 class="btn-status btn-pending" title="Mark as Pending">⏳</button>
                     </div>
@@ -1025,12 +1023,21 @@ function displayMatchResults(tips) {
     container.innerHTML = html;
 }
 
+// Get card border class based on status
+function getCardBorderClass(status) {
+    if (status === 'won') {
+        return 'tip-item-won';
+    } else if (status === 'lost') {
+        return 'tip-item-lost';
+    }
+    return ''; // No special class for pending
+}
+
 // Get status CSS class
 function getStatusClass(status) {
     const classes = {
         'won': 'status-won',
         'lost': 'status-lost',
-        'draw': 'status-draw',
         'pending': 'status-pending'
     };
     return classes[status] || 'status-pending';
@@ -1041,7 +1048,6 @@ function getStatusIcon(status) {
     const icons = {
         'won': '✅',
         'lost': '❌',
-        'draw': '⚖️',
         'pending': '⏳'
     };
     return icons[status] || '⏳';

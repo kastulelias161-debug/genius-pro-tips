@@ -333,8 +333,8 @@
                             <span class="tip-prediction">${tip.prediction}</span>
                             <span class="tip-odds">${tip.odds}</span>
                             <span class="tip-status">
-                                <span class="status-badge ${tip.status === 'won' ? 'status-won' : tip.status === 'lost' ? 'status-lost' : tip.status === 'draw' ? 'status-draw' : 'status-pending'}">
-                                    ${tip.status === 'won' ? '✅' : tip.status === 'lost' ? '❌' : tip.status === 'draw' ? '⚖️' : '⏳'} ${(tip.status || 'pending').toUpperCase()}
+                                <span class="status-badge ${tip.status === 'won' ? 'status-won' : tip.status === 'lost' ? 'status-lost' : 'status-pending'}">
+                                    ${tip.status === 'won' ? '✅' : tip.status === 'lost' ? '❌' : '⏳'} ${(tip.status || 'pending').toUpperCase()}
                                 </span>
                             </span>
                         </div>
