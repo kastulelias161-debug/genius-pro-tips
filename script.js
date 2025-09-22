@@ -481,6 +481,14 @@ function displayTips(tips, type) {
                                     <div class="tip-detail-label">Odds</div>
                                     <div class="tip-detail-value">${tip.odds}</div>
                                 </div>
+                                <div class="tip-detail">
+                                    <div class="tip-detail-label">Status</div>
+                                    <div class="tip-detail-value">
+                                        <span class="status-badge ${getStatusClass(tip.status || 'pending')}">
+                                            ${getStatusIcon(tip.status || 'pending')} ${(tip.status || 'pending').toUpperCase()}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                             ${isAdmin ? `
                                 <div class="tip-actions">

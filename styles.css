@@ -1275,6 +1275,25 @@ body {
     opacity: 0.9;
 }
 
+/* Status badges in tip items */
+.tip-detail .status-badge {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tip-status .status-badge {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 /* Mobile Responsive for Match Results */
 @media (max-width: 768px) {
     .match-result-item {
