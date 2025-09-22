@@ -43,6 +43,11 @@ document.addEventListener('DOMContentLoaded', function() {
     setupRealtimeUpdates();
     setupSessionMonitoring();
     setupAdminActivityDetection();
+    
+    // Check if this is the admin page
+    if (window.location.pathname.includes('admin.html')) {
+        checkAdminPageAccess();
+    }
 });
 
 // Setup admin activity detection to reset logout timer
@@ -288,8 +293,13 @@ function handleAdminLogin(e) {
 // Show admin features
 function showAdminFeatures() {
     const logoutBtn = document.getElementById('logoutBtn');
+    const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+    
     if (logoutBtn) {
         logoutBtn.style.display = 'block';
+    }
+    if (logoutBtnMobile) {
+        logoutBtnMobile.style.display = 'block';
     }
 }
 
@@ -360,6 +370,35 @@ function validateAdminAccess() {
     return true;
 }
 
+// Check admin page access
+function checkAdminPageAccess() {
+    // If user is not admin, redirect to main site
+    if (!isAdmin) {
+        // Show login form (already handled by admin.html)
+        return;
+    } else {
+        // User is admin, show dashboard
+        showAdminDashboard();
+    }
+}
+
+// Show admin dashboard (for admin.html)
+function showAdminDashboard() {
+    const loginSection = document.getElementById('adminLoginSection');
+    const dashboard = document.getElementById('adminDashboard');
+    
+    if (loginSection) loginSection.style.display = 'none';
+    if (dashboard) dashboard.style.display = 'block';
+    
+    // Load dashboard stats
+    loadDashboardStats();
+    
+    // Load initial tips
+    if (typeof loadTipsForManagement === 'function') {
+        loadTipsForManagement();
+    }
+}
+
 // Logout function
 function logout() {
     clearAdminSession();
@@ -370,7 +409,12 @@ function logout() {
         adminLogoutTimer = null;
     }
     
-    location.reload();
+    // If on admin page, redirect to main site
+    if (window.location.pathname.includes('admin.html')) {
+        window.location.href = 'index.html';
+    } else {
+        location.reload();
+    }
 }
 
 // Get tips data from Supabase

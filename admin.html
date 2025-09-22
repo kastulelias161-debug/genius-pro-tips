@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Genius Tips</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">Genius Tips - Admin</h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">← Back to Website</a>
+                <a href="#" class="nav-link" onclick="logout()" id="logoutBtn" style="display: none;">Logout</a>
+            </nav>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Mobile Navigation -->
+            <nav class="mobile-nav">
+                <a href="index.html" class="nav-link">← Back to Website</a>
+                <a href="#" class="nav-link" onclick="logout()" id="logoutBtnMobile" style="display: none;">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Admin Login Section -->
+            <div id="adminLoginSection" class="admin-login-section">
+                <div class="login-card">
+                    <h2>🔐 Admin Login Required</h2>
+                    <p>Please login to access the admin dashboard</p>
+                    <form id="adminLoginForm" novalidate>
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" required 
+                                   placeholder="Enter your username"
+                                   autocomplete="username"
+                                   minlength="3"
+                                   maxlength="20">
+                            <span class="error-message" id="username-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required 
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password"
+                                   minlength="6"
+                                   maxlength="50">
+                            <span class="error-message" id="password-error"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-text">Login to Dashboard</span>
+                            <span class="btn-loading" style="display: none;">Logging in...</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard (Hidden until login) -->
+            <div id="adminDashboard" class="admin-dashboard-container" style="display: none;">
+                <!-- Statistics Dashboard -->
+                <div class="admin-dashboard">
+                    <h3>📊 Admin Dashboard</h3>
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">⚽</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="todayCount">0</div>
+                                <div class="stat-label">Today Tips</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="weeklyCount">0</div>
+                                <div class="stat-label">Weekly Tips</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="monthlyCount">0</div>
+                                <div class="stat-label">Monthly Tips</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🚂</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="trainCount">0</div>
+                                <div class="stat-label">Train Tips</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-summary">
+                        <div class="summary-card">
+                            <h4>📈 Total Posts</h4>
+                            <div class="summary-number" id="totalCount">0</div>
+                        </div>
+                        <div class="summary-card">
+                            <h4>🕒 Last Updated</h4>
+                            <div class="summary-text" id="lastUpdated">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Management Tools -->
+                <div class="admin-management">
+                    <h3>🛠️ Management Tools</h3>
+                    
+                    <!-- Tip Type Selector -->
+                    <div class="tip-type-selector">
+                        <label for="tipTypeSelect">Select Tip Type:</label>
+                        <select id="tipTypeSelect" onchange="loadTipsForManagement()">
+                            <option value="today">Today Tips</option>
+                            <option value="weekly">Weekly Tips</option>
+                            <option value="monthly">Monthly Tips</option>
+                            <option value="train">Train Tips</option>
+                        </select>
+                    </div>
+
+                    <!-- Add New Tip Form -->
+                    <div class="admin-section">
+                        <h4>➕ Add New Tip</h4>
+                        <form id="addTipForm">
+                            <div class="tip-form">
+                                <div class="form-group" id="singleDateGroup">
+                                    <label for="date">Date:</label>
+                                    <input type="date" id="date" name="date" required>
+                                </div>
+                                <div class="form-group" id="dateRangeGroup" style="display: none;">
+                                    <label for="startDate">Start Date:</label>
+                                    <input type="date" id="startDate" name="startDate">
+                                </div>
+                                <div class="form-group" id="endDateGroup" style="display: none;">
+                                    <label for="endDate">End Date:</label>
+                                    <input type="date" id="endDate" name="endDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="match">Match:</label>
+                                    <input type="text" id="match" name="match" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="league">League:</label>
+                                    <input type="text" id="league" name="league" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="time">Time:</label>
+                                    <input type="text" id="time" name="time" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prediction">Prediction:</label>
+                                    <input type="text" id="prediction" name="prediction" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="odds">Odds:</label>
+                                    <input type="text" id="odds" name="odds" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Tip</button>
+                        </form>
+                    </div>
+
+                    <!-- Tips Management -->
+                    <div class="admin-section">
+                        <h4>📝 Manage Existing Tips</h4>
+                        <div id="tipsManagementContainer">
+                            <!-- Tips will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Genius Tips Admin Panel. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Admin page specific initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            checkAdminStatus();
+            
+            // Initialize admin page
+            initializeAdminPage();
+        });
+
+        // Initialize admin page
+        function initializeAdminPage() {
+            // Setup form validation
+            const adminForm = document.getElementById('adminLoginForm');
+            if (adminForm) {
+                adminForm.addEventListener('submit', handleAdminLogin);
+                setupFormValidation(adminForm);
+            }
+
+            // Setup add tip form
+            const addTipForm = document.getElementById('addTipForm');
+            if (addTipForm) {
+                addTipForm.addEventListener('submit', handleAddTipFromAdmin);
+                setupFormValidation(addTipForm);
+            }
+
+            // Setup tip type selector
+            const tipTypeSelect = document.getElementById('tipTypeSelect');
+            if (tipTypeSelect) {
+                tipTypeSelect.addEventListener('change', loadTipsForManagement);
+            }
+        }
+
+        // Handle admin login from admin page
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            
+            if (!validateForm(e.target)) {
+                return;
+            }
+            
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            showLoadingState(submitButton);
+            
+            setTimeout(() => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                    isAdmin = true;
+                    const timestamp = Date.now();
+                    sessionStorage.setItem('isAdmin', 'true');
+                    sessionStorage.setItem('adminTimestamp', timestamp.toString());
+                    showAdminFeatures();
+                    showAdminDashboard();
+                    startAdminLogoutTimer();
+                    
+                    showNotification('Admin login successful! Welcome to the dashboard.', 'success');
+                } else {
+                    showNotification('Invalid credentials. Please try again.', 'error');
+                }
+                
+                hideLoadingState(submitButton);
+            }, 1000);
+        }
+
+        // Show admin dashboard
+        function showAdminDashboard() {
+            document.getElementById('adminLoginSection').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            
+            // Load dashboard stats
+            loadDashboardStats();
+            
+            // Load initial tips
+            loadTipsForManagement();
+        }
+
+        // Handle add tip from admin page
+        function handleAddTipFromAdmin(e) {
+            e.preventDefault();
+            
+            if (!validateForm(e.target)) {
+                return;
+            }
+            
+            const tipType = document.getElementById('tipTypeSelect').value;
+            handleAddTip(e, tipType);
+        }
+
+        // Load tips for management
+        async function loadTipsForManagement() {
+            const tipType = document.getElementById('tipTypeSelect').value;
+            const tips = await getTipsData(tipType);
+            displayTipsForManagement(tips, tipType);
+        }
+
+        // Display tips for management
+        function displayTipsForManagement(tips, type) {
+            const container = document.getElementById('tipsManagementContainer');
+            
+            if (tips.length === 0) {
+                container.innerHTML = `
+                    <div class="no-tips">
+                        <p>No ${type} tips found. Add some tips using the form above.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = tips.map(tip => `
+                <div class="tip-management-item">
+                    <div class="tip-info">
+                        <div class="tip-match">${tip.match}</div>
+                        <div class="tip-details">
+                            <span class="tip-league">${tip.league}</span>
+                            <span class="tip-time">${tip.time}</span>
+                            <span class="tip-prediction">${tip.prediction}</span>
+                            <span class="tip-odds">${tip.odds}</span>
+                        </div>
+                        <div class="tip-date">${tip.date}</div>
+                    </div>
+                    <div class="tip-actions">
+                        <button class="btn btn-secondary" onclick="editTip('${type}', ${tip.id})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteTip('${type}', ${tip.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
