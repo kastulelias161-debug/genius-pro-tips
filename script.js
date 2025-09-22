@@ -39,7 +39,7 @@ const REQUIRED_TAPS = 15; // Increased to 15 taps to prevent accidental activati
 document.addEventListener('DOMContentLoaded', function() {
     checkAdminStatus();
     initializeEventListeners();
-    setupSecretAdminAccess();
+    // setupSecretAdminAccess(); // Disabled - using dedicated admin panel at /admin
     setupRealtimeUpdates();
     setupSessionMonitoring();
     setupAdminActivityDetection();
@@ -260,6 +260,8 @@ function navigateToTips(type) {
 }
 
 // Admin modal functions
+// Admin modal functions - DISABLED (using dedicated admin panel at /admin)
+/*
 function openAdminModal() {
     document.getElementById('adminModal').style.display = 'block';
 }
@@ -268,6 +270,7 @@ function closeAdminModal() {
     document.getElementById('adminModal').style.display = 'none';
     document.getElementById('adminLoginForm').reset();
 }
+*/
 
 // Handle admin login
 function handleAdminLogin(e) {
@@ -839,13 +842,15 @@ async function loadTipsPage() {
     displayTips(tips, type);
 }
 
-// Close modal when clicking outside
+// Close modal when clicking outside - DISABLED (using dedicated admin panel)
+/*
 window.onclick = function(event) {
     const modal = document.getElementById('adminModal');
     if (event.target === modal) {
         closeAdminModal();
     }
 }
+*/
 
 // Mobile menu functionality
 function toggleMobileMenu() {
@@ -911,8 +916,11 @@ document.addEventListener('touchstart', function(event) {
 
 // Export functions for global access
 window.navigateToTips = navigateToTips;
+// Global function assignments - DISABLED (using dedicated admin panel)
+/*
 window.openAdminModal = openAdminModal;
 window.closeAdminModal = closeAdminModal;
+*/
 window.logout = logout;
 window.editTip = editTip;
 window.deleteTip = deleteTip;
