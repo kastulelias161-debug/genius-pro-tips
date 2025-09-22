@@ -36,48 +36,52 @@ To connect to Supabase database:
 -- Today Tips Table
 CREATE TABLE today_tips (
     id SERIAL PRIMARY KEY,
+    date TEXT NOT NULL,
     match TEXT NOT NULL,
+    league TEXT NOT NULL,
     time TEXT NOT NULL,
     prediction TEXT NOT NULL,
     odds TEXT NOT NULL,
-    confidence TEXT NOT NULL,
-    analysis TEXT NOT NULL,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'draw')),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Weekly Tips Table
 CREATE TABLE weekly_tips (
     id SERIAL PRIMARY KEY,
+    date TEXT NOT NULL,
     match TEXT NOT NULL,
+    league TEXT NOT NULL,
     time TEXT NOT NULL,
     prediction TEXT NOT NULL,
     odds TEXT NOT NULL,
-    confidence TEXT NOT NULL,
-    analysis TEXT NOT NULL,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'draw')),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Monthly Tips Table
 CREATE TABLE monthly_tips (
     id SERIAL PRIMARY KEY,
+    date TEXT NOT NULL,
     match TEXT NOT NULL,
+    league TEXT NOT NULL,
     time TEXT NOT NULL,
     prediction TEXT NOT NULL,
     odds TEXT NOT NULL,
-    confidence TEXT NOT NULL,
-    analysis TEXT NOT NULL,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'draw')),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Train Tips Table
 CREATE TABLE train_tips (
     id SERIAL PRIMARY KEY,
+    date TEXT NOT NULL,
     match TEXT NOT NULL,
+    league TEXT NOT NULL,
     time TEXT NOT NULL,
     prediction TEXT NOT NULL,
     odds TEXT NOT NULL,
-    confidence TEXT NOT NULL,
-    analysis TEXT NOT NULL,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'draw')),
     created_at TIMESTAMP DEFAULT NOW()
 );
 ```

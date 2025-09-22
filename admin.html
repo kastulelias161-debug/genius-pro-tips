@@ -103,16 +103,24 @@
                             </div>
                         </div>
                     </div>
-                    <div class="dashboard-summary">
-                        <div class="summary-card">
-                            <h4>📈 Total Posts</h4>
-                            <div class="summary-number" id="totalCount">0</div>
+                        <div class="dashboard-summary">
+                            <div class="summary-card">
+                                <h4>📈 Total Posts</h4>
+                                <div class="summary-number" id="totalCount">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>🏆 Success Rate</h4>
+                                <div class="summary-number" id="successRate">0%</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>✅ Completed Matches</h4>
+                                <div class="summary-number" id="completedCount">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>🕒 Last Updated</h4>
+                                <div class="summary-text" id="lastUpdated">Loading...</div>
+                            </div>
                         </div>
-                        <div class="summary-card">
-                            <h4>🕒 Last Updated</h4>
-                            <div class="summary-text" id="lastUpdated">Loading...</div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Management Tools -->
@@ -170,6 +178,15 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Add Tip</button>
                         </form>
+                    </div>
+
+                    <!-- Match Results Management -->
+                    <div class="admin-section">
+                        <h4>🏆 Match Results Management</h4>
+                        <p>Update match results to track your success rate</p>
+                        <div id="matchResultsContainer">
+                            <!-- Match results will be loaded here -->
+                        </div>
                     </div>
 
                     <!-- Tips Management -->
@@ -261,6 +278,11 @@
             // Load dashboard stats
             if (typeof loadDashboardStats === 'function') {
                 loadDashboardStats();
+            }
+            
+            // Load match results for management
+            if (typeof loadMatchResultsForAdmin === 'function') {
+                loadMatchResultsForAdmin();
             }
             
             // Load initial tips

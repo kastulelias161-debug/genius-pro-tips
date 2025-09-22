@@ -756,12 +756,14 @@ async function loadDashboardStats() {
         const counts = {};
         let totalCount = 0;
         let lastUpdated = null;
+        let allTips = [];
         
         // Get counts for each tip type
         for (const type of tipTypes) {
             const tips = await getTipsData(type);
             counts[type] = tips.length;
             totalCount += tips.length;
+            allTips = allTips.concat(tips);
             
             // Find the most recent tip
             if (tips.length > 0) {
@@ -775,17 +777,21 @@ async function loadDashboardStats() {
             }
         }
         
+        // Calculate success rate
+        const successRate = calculateSuccessRate(allTips);
+        const completedTips = allTips.filter(tip => tip.status !== 'pending');
+        
         // Update dashboard display
-        updateDashboardDisplay(counts, totalCount, lastUpdated);
+        updateDashboardDisplay(counts, totalCount, lastUpdated, successRate, completedTips.length);
         
     } catch (error) {
         console.error('Error loading dashboard stats:', error);
-        updateDashboardDisplay({today: 0, weekly: 0, monthly: 0, train: 0}, 0, null);
+        updateDashboardDisplay({today: 0, weekly: 0, monthly: 0, train: 0}, 0, null, 0, 0);
     }
 }
 
 // Update dashboard display
-function updateDashboardDisplay(counts, totalCount, lastUpdated) {
+function updateDashboardDisplay(counts, totalCount, lastUpdated, successRate, completedCount) {
     // Update individual counts
     document.getElementById('todayCount').textContent = counts.today || 0;
     document.getElementById('weeklyCount').textContent = counts.weekly || 0;
@@ -794,6 +800,18 @@ function updateDashboardDisplay(counts, totalCount, lastUpdated) {
     
     // Update total count
     document.getElementById('totalCount').textContent = totalCount;
+    
+    // Update success rate
+    const successRateElement = document.getElementById('successRate');
+    if (successRateElement) {
+        successRateElement.textContent = `${successRate}%`;
+    }
+    
+    // Update completed count
+    const completedCountElement = document.getElementById('completedCount');
+    if (completedCountElement) {
+        completedCountElement.textContent = completedCount;
+    }
     
     // Update last updated time
     const lastUpdatedElement = document.getElementById('lastUpdated');
@@ -921,8 +939,156 @@ window.navigateToTips = navigateToTips;
 window.openAdminModal = openAdminModal;
 window.closeAdminModal = closeAdminModal;
 */
+// ==================== MATCH RESULT TRACKING SYSTEM ====================
+
+// Load match results for admin management
+async function loadMatchResults() {
+    try {
+        const allTips = [];
+        const tipTypes = ['today', 'weekly', 'monthly', 'train'];
+        
+        for (const type of tipTypes) {
+            const tips = await getTipsData(type);
+            tips.forEach(tip => {
+                tip.tipType = type;
+                allTips.push(tip);
+            });
+        }
+        
+        // Sort by date (newest first)
+        allTips.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        displayMatchResults(allTips);
+    } catch (error) {
+        console.error('Error loading match results:', error);
+    }
+}
+
+// Display match results in admin panel
+function displayMatchResults(tips) {
+    const container = document.getElementById('matchResultsContainer');
+    if (!container) return;
+    
+    if (tips.length === 0) {
+        container.innerHTML = '<div class="no-tips">No tips found.</div>';
+        return;
+    }
+    
+    let html = '<div class="match-results-list">';
+    
+    tips.forEach(tip => {
+        const statusClass = getStatusClass(tip.status);
+        const statusIcon = getStatusIcon(tip.status);
+        
+        html += `
+            <div class="match-result-item">
+                <div class="match-info">
+                    <div class="match-header">
+                        <span class="match-date">${tip.date}</span>
+                        <span class="match-time">${tip.time}</span>
+                        <span class="match-league">${tip.league}</span>
+                    </div>
+                    <div class="match-details">
+                        <strong>${tip.match}</strong>
+                        <span class="prediction">${tip.prediction}</span>
+                        <span class="odds">Odds: ${tip.odds}</span>
+                    </div>
+                </div>
+                <div class="match-status">
+                    <span class="status-badge ${statusClass}">
+                        ${statusIcon} ${tip.status.toUpperCase()}
+                    </span>
+                    <div class="status-actions">
+                        <button onclick="updateMatchStatus('${tip.tipType}', ${tip.id}, 'won')" 
+                                class="btn-status btn-won" title="Mark as Won">✅</button>
+                        <button onclick="updateMatchStatus('${tip.tipType}', ${tip.id}, 'lost')" 
+                                class="btn-status btn-lost" title="Mark as Lost">❌</button>
+                        <button onclick="updateMatchStatus('${tip.tipType}', ${tip.id}, 'draw')" 
+                                class="btn-status btn-draw" title="Mark as Draw">⚖️</button>
+                        <button onclick="updateMatchStatus('${tip.tipType}', ${tip.id}, 'pending')" 
+                                class="btn-status btn-pending" title="Mark as Pending">⏳</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Get status CSS class
+function getStatusClass(status) {
+    const classes = {
+        'won': 'status-won',
+        'lost': 'status-lost',
+        'draw': 'status-draw',
+        'pending': 'status-pending'
+    };
+    return classes[status] || 'status-pending';
+}
+
+// Get status icon
+function getStatusIcon(status) {
+    const icons = {
+        'won': '✅',
+        'lost': '❌',
+        'draw': '⚖️',
+        'pending': '⏳'
+    };
+    return icons[status] || '⏳';
+}
+
+// Update match status
+async function updateMatchStatus(tipType, tipId, newStatus) {
+    try {
+        const tableName = `${tipType}_tips`;
+        const { error } = await supabase
+            .from(tableName)
+            .update({ status: newStatus })
+            .eq('id', tipId);
+        
+        if (error) {
+            console.error('Error updating match status:', error);
+            alert('Error updating match status. Please try again.');
+            return;
+        }
+        
+        // Refresh the match results display
+        loadMatchResults();
+        
+        // Refresh dashboard stats
+        if (typeof loadDashboardStats === 'function') {
+            loadDashboardStats();
+        }
+        
+        alert(`Match status updated to: ${newStatus.toUpperCase()}`);
+    } catch (error) {
+        console.error('Error updating match status:', error);
+        alert('Error updating match status. Please try again.');
+    }
+}
+
+// Calculate success rate
+function calculateSuccessRate(tips) {
+    const completedTips = tips.filter(tip => tip.status !== 'pending');
+    if (completedTips.length === 0) return 0;
+    
+    const wonTips = completedTips.filter(tip => tip.status === 'won');
+    return Math.round((wonTips.length / completedTips.length) * 100);
+}
+
+// Load match results for admin panel
+async function loadMatchResultsForAdmin() {
+    if (typeof loadMatchResults === 'function') {
+        loadMatchResults();
+    }
+}
+
 window.logout = logout;
 window.editTip = editTip;
 window.deleteTip = deleteTip;
 window.loadTipsPage = loadTipsPage;
 window.toggleMobileMenu = toggleMobileMenu;
+window.updateMatchStatus = updateMatchStatus;
+window.loadMatchResultsForAdmin = loadMatchResultsForAdmin;
