@@ -426,11 +426,27 @@ async function getTipsData(type) {
         const tableName = `${type}_tips`;
         const { data, error } = await supabase
             .from(tableName)
-            .select('*')
+            .select('id, date, match, league, time, prediction, odds, created_at, status')
             .order('created_at', { ascending: false });
         
         if (error) {
             console.error('Error fetching tips:', error);
+            // If status column doesn't exist, try without it
+            if (error.message && error.message.includes('status')) {
+                console.log('Status column not found, fetching without status...');
+                const { data: fallbackData, error: fallbackError } = await supabase
+                    .from(tableName)
+                    .select('id, date, match, league, time, prediction, odds, created_at')
+                    .order('created_at', { ascending: false });
+                
+                if (fallbackError) {
+                    console.error('Error fetching tips (fallback):', fallbackError);
+                    return [];
+                }
+                
+                // Add default status to each tip
+                return (fallbackData || []).map(tip => ({ ...tip, status: 'pending' }));
+            }
             return [];
         }
         
@@ -863,6 +879,8 @@ async function loadTipsPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const type = urlParams.get('type');
     
+    console.log('Loading tips page for type:', type);
+    
     if (!type) {
         window.location.href = 'index.html';
         return;
@@ -881,7 +899,9 @@ async function loadTipsPage() {
     }
     
     // Load and display tips
+    console.log('Fetching tips for type:', type);
     const tips = await getTipsData(type);
+    console.log('Fetched tips:', tips);
     displayTips(tips, type);
 }
 
