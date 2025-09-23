@@ -213,6 +213,17 @@
     </footer>
 
     <script src="script.js"></script>
+    
+    <!-- Temporary mobile debugging console -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+        // Only load Eruda on mobile devices
+        if (window.innerWidth <= 768) {
+            eruda.init();
+            console.log('Mobile debugging console loaded');
+        }
+    </script>
+    
     <script>
         // Admin page specific initialization
         document.addEventListener('DOMContentLoaded', function() {
