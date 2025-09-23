@@ -1357,3 +1357,96 @@ body {
         gap: 0.25rem;
     }
 }
+
+/* Mobile Form Improvements */
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .form-group input {
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        min-height: 48px; /* Better touch target */
+        border: 2px solid #ddd;
+    }
+    
+    .form-group input:focus {
+        border-color: #4a7c59;
+        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+    }
+    
+    /* Date input specific mobile styles */
+    .form-group input[type="date"] {
+        padding: 0.875rem;
+        font-size: 1rem;
+        min-height: 48px;
+    }
+    
+    /* Admin form improvements */
+    .admin-section {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .tip-form {
+        gap: 1.5rem;
+    }
+    
+    /* Button improvements for mobile */
+    .btn {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        min-height: 48px;
+        border-radius: 8px;
+    }
+    
+    /* Tip type selector mobile */
+    .tip-type-selector {
+        margin-bottom: 2rem;
+    }
+    
+    .tip-type-selector label {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    .tip-type-selector select {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        min-height: 48px;
+        border: 2px solid #ddd;
+    }
+    
+    /* Mobile device specific styles */
+    .mobile-device .mobile-form {
+        padding: 1rem;
+    }
+    
+    .mobile-device .mobile-btn {
+        transition: transform 0.1s ease;
+    }
+    
+    .mobile-device .mobile-btn:active {
+        transform: scale(0.98);
+    }
+    
+    /* Touch feedback for inputs */
+    .mobile-device input:focus,
+    .mobile-device select:focus,
+    .mobile-device textarea:focus {
+        transform: scale(1.02);
+        transition: transform 0.1s ease;
+    }
+}

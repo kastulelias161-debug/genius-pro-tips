@@ -595,6 +595,25 @@ function setupAdminPanel(type) {
             document.getElementById('startDate').required = false;
             document.getElementById('endDate').required = false;
         }
+        
+        // Mobile-specific improvements
+        if (window.innerWidth <= 768) {
+            // Ensure form fields are properly sized for mobile
+            const inputs = addTipForm.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.style.minHeight = '48px';
+                input.style.fontSize = '1.1rem';
+            });
+            
+            // Improve date input handling on mobile
+            const dateInputs = addTipForm.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    // Ensure mobile date picker opens properly
+                    this.showPicker && this.showPicker();
+                });
+            });
+        }
     }
     
     // Load dashboard stats when admin panel is shown
@@ -1163,6 +1182,50 @@ async function loadMatchResultsForAdmin() {
         loadMatchResults();
     }
 }
+
+// Mobile optimization function
+function optimizeForMobile() {
+    if (window.innerWidth <= 768) {
+        // Add mobile-specific classes
+        document.body.classList.add('mobile-device');
+        
+        // Improve form interactions
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.classList.add('mobile-form');
+        });
+        
+        // Improve button interactions
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.classList.add('mobile-btn');
+        });
+        
+        // Add touch-friendly interactions
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+        
+        console.log('Mobile optimization applied');
+    }
+}
+
+// Initialize mobile optimization on page load
+document.addEventListener('DOMContentLoaded', function() {
+    optimizeForMobile();
+    
+    // Re-optimize on window resize
+    window.addEventListener('resize', function() {
+        optimizeForMobile();
+    });
+});
 
 window.logout = logout;
 window.editTip = editTip;
