@@ -571,6 +571,7 @@ function formatDate(dateString) {
 
 // Setup admin panel
 function setupAdminPanel(type) {
+    console.log('Setting up admin panel for type:', type);
     const addTipForm = document.getElementById('addTipForm');
     if (addTipForm) {
         addTipForm.onsubmit = (e) => handleAddTip(e, type);
@@ -580,6 +581,12 @@ function setupAdminPanel(type) {
         const dateRangeGroup = document.getElementById('dateRangeGroup');
         const endDateGroup = document.getElementById('endDateGroup');
         
+        console.log('Date groups found:', {
+            singleDateGroup: !!singleDateGroup,
+            dateRangeGroup: !!dateRangeGroup,
+            endDateGroup: !!endDateGroup
+        });
+        
         if (type === 'train') {
             singleDateGroup.style.display = 'none';
             dateRangeGroup.style.display = 'block';
@@ -587,6 +594,7 @@ function setupAdminPanel(type) {
             document.getElementById('startDate').required = true;
             document.getElementById('endDate').required = true;
             document.getElementById('date').required = false;
+            console.log('Train tips: Using date range');
         } else {
             singleDateGroup.style.display = 'block';
             dateRangeGroup.style.display = 'none';
@@ -594,10 +602,12 @@ function setupAdminPanel(type) {
             document.getElementById('date').required = true;
             document.getElementById('startDate').required = false;
             document.getElementById('endDate').required = false;
+            console.log('Single date tips: Using single date');
         }
         
         // Mobile-specific improvements
         if (window.innerWidth <= 768) {
+            console.log('Mobile device detected, applying mobile optimizations');
             // Ensure form fields are properly sized for mobile
             const inputs = addTipForm.querySelectorAll('input');
             inputs.forEach(input => {
@@ -609,11 +619,14 @@ function setupAdminPanel(type) {
             const dateInputs = addTipForm.querySelectorAll('input[type="date"]');
             dateInputs.forEach(input => {
                 input.addEventListener('focus', function() {
+                    console.log('Date input focused on mobile');
                     // Ensure mobile date picker opens properly
                     this.showPicker && this.showPicker();
                 });
             });
         }
+    } else {
+        console.error('Add tip form not found!');
     }
     
     // Load dashboard stats when admin panel is shown
@@ -622,6 +635,10 @@ function setupAdminPanel(type) {
 
 // Handle add tip
 async function handleAddTip(e, type) {
+    console.log('handleAddTip called with type:', type);
+    console.log('Event target:', e.target);
+    console.log('Is mobile:', window.innerWidth <= 768);
+    
     // Validate admin access before proceeding
     if (!validateAdminAccess()) {
         alert('Admin access required. Please login again.');
@@ -631,6 +648,17 @@ async function handleAddTip(e, type) {
     e.preventDefault();
     
     const formData = new FormData(e.target);
+    console.log('Form data collected:', {
+        date: formData.get('date'),
+        startDate: formData.get('startDate'),
+        endDate: formData.get('endDate'),
+        match: formData.get('match'),
+        league: formData.get('league'),
+        time: formData.get('time'),
+        prediction: formData.get('prediction'),
+        odds: formData.get('odds')
+    });
+    
     let dateValue;
     
     // Handle date based on tip type
@@ -638,8 +666,10 @@ async function handleAddTip(e, type) {
         const startDate = formData.get('startDate');
         const endDate = formData.get('endDate');
         dateValue = `${startDate} to ${endDate}`;
+        console.log('Train tips date range:', dateValue);
     } else {
         dateValue = formData.get('date');
+        console.log('Single date value:', dateValue);
     }
     
     const newTip = {

@@ -225,18 +225,17 @@
 
         // Initialize admin page
         function initializeAdminPage() {
+            console.log('Initializing admin page...');
             // Setup form validation
             const adminForm = document.getElementById('adminLoginForm');
             if (adminForm) {
                 adminForm.addEventListener('submit', handleAdminLogin);
-                setupFormValidation(adminForm);
             }
 
             // Setup add tip form
             const addTipForm = document.getElementById('addTipForm');
             if (addTipForm) {
                 addTipForm.addEventListener('submit', handleAddTipFromAdmin);
-                setupFormValidation(addTipForm);
             }
 
             // Setup tip type selector
@@ -293,15 +292,19 @@
             if (typeof loadTipsForManagement === 'function') {
                 loadTipsForManagement();
             }
+            
+            // Mobile optimization
+            if (window.innerWidth <= 768) {
+                console.log('Mobile device detected in admin panel');
+                if (typeof optimizeForMobile === 'function') {
+                    optimizeForMobile();
+                }
+            }
         }
 
         // Handle add tip from admin page
         function handleAddTipFromAdmin(e) {
             e.preventDefault();
-            
-            if (!validateForm(e.target)) {
-                return;
-            }
             
             const tipType = document.getElementById('tipTypeSelect').value;
             handleAddTip(e, tipType);
