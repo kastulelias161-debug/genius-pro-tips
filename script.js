@@ -478,7 +478,7 @@ function displayTips(tips, type) {
             // Mobile vertical layout
             tipsContainer.innerHTML = `
                 <div class="mobile-tips-container" id="mobileTipsContainer">
-                    ${tips.map(tip => createMobileTipCard(tip)).join('')}
+                    ${tips.map(tip => createMobileTipCard(tip, type)).join('')}
                 </div>
             `;
         } else {
@@ -539,7 +539,7 @@ function displayTips(tips, type) {
 }
 
 // Create mobile tip card
-function createMobileTipCard(tip) {
+function createMobileTipCard(tip, type) {
     const statusClass = getStatusClass(tip.status || 'pending');
     const statusIcon = getStatusIcon(tip.status || 'pending');
     
@@ -554,6 +554,12 @@ function createMobileTipCard(tip) {
             <div class="mobile-tip-status ${statusClass}">
                 ${statusIcon} ${(tip.status || 'pending').toUpperCase()}
             </div>
+            ${isAdmin ? `
+                <div class="mobile-tip-actions">
+                    <button class="btn btn-secondary" onclick="editTip('${type}', ${tip.id})">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteTip('${type}', ${tip.id})">Delete</button>
+                </div>
+            ` : ''}
         </div>
     `;
 }
