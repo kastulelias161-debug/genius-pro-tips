@@ -475,18 +475,12 @@ function displayTips(tips, type) {
         const isMobile = window.innerWidth <= 768;
         
         if (isMobile) {
-            // Mobile horizontal scroll layout
+            // Mobile vertical layout
             tipsContainer.innerHTML = `
                 <div class="mobile-tips-container" id="mobileTipsContainer">
                     ${tips.map(tip => createMobileTipCard(tip)).join('')}
                 </div>
-                <div class="mobile-scroll-indicators" id="mobileScrollIndicators">
-                    ${tips.map((_, index) => `<div class="mobile-scroll-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`).join('')}
-                </div>
             `;
-            
-            // Setup mobile scroll functionality
-            setupMobileScroll();
         } else {
             // Desktop layout (existing)
             const groupedTips = groupTipsByDate(tips);
@@ -562,73 +556,6 @@ function createMobileTipCard(tip) {
             </div>
         </div>
     `;
-}
-
-// Setup mobile scroll functionality
-function setupMobileScroll() {
-    const container = document.getElementById('mobileTipsContainer');
-    const indicators = document.getElementById('mobileScrollIndicators');
-    
-    if (!container || !indicators) return;
-    
-    let currentIndex = 0;
-    const cards = container.querySelectorAll('.mobile-tip-card');
-    const dots = indicators.querySelectorAll('.mobile-scroll-dot');
-    
-    // Update active dot
-    function updateActiveDot(index) {
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === index);
-        });
-    }
-    
-    // Handle scroll events
-    container.addEventListener('scroll', () => {
-        const scrollLeft = container.scrollLeft;
-        const cardWidth = cards[0]?.offsetWidth || 280;
-        const gap = 16; // 1rem gap
-        const newIndex = Math.round(scrollLeft / (cardWidth + gap));
-        
-        if (newIndex !== currentIndex && newIndex < cards.length) {
-            currentIndex = newIndex;
-            updateActiveDot(currentIndex);
-        }
-    });
-    
-    // Handle dot clicks
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            const cardWidth = cards[0]?.offsetWidth || 280;
-            const gap = 16;
-            container.scrollTo({
-                left: index * (cardWidth + gap),
-                behavior: 'smooth'
-            });
-            currentIndex = index;
-            updateActiveDot(currentIndex);
-        });
-    });
-    
-    // Handle touch gestures
-    let startX = 0;
-    let startY = 0;
-    
-    container.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-    });
-    
-    container.addEventListener('touchmove', (e) => {
-        const currentX = e.touches[0].clientX;
-        const currentY = e.touches[0].clientY;
-        const diffX = Math.abs(currentX - startX);
-        const diffY = Math.abs(currentY - startY);
-        
-        // Prevent vertical scroll if horizontal scroll is detected
-        if (diffX > diffY) {
-            e.preventDefault();
-        }
-    });
 }
 
 // Group tips by date
