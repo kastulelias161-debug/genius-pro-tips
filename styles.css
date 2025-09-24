@@ -1460,11 +1460,11 @@ body {
     
     .mobile-tip-card {
         width: 100%;
-        background: #1a1a1a;
-        border: 2px dashed #fff;
+        background: #fff;
+        border: 2px solid #4a7c59;
         border-radius: 12px;
         padding: 1rem;
-        color: white;
+        color: #333;
         position: relative;
         min-height: 120px;
         display: flex;
@@ -1482,7 +1482,7 @@ body {
     .mobile-tip-league {
         font-size: 14px;
         font-weight: 600;
-        color: #fff;
+        color: #333;
     }
     
     .mobile-tip-time {
@@ -1497,14 +1497,14 @@ body {
     .mobile-tip-teams {
         font-size: 16px;
         font-weight: 700;
-        color: #fff;
+        color: #333;
         margin-bottom: 0.5rem;
         text-align: center;
     }
     
     .mobile-tip-prediction {
         font-size: 12px;
-        color: #ccc;
+        color: #666;
         margin-bottom: 0.5rem;
         text-align: center;
     }
