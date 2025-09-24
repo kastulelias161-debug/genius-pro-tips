@@ -471,52 +471,70 @@ function displayTips(tips, type) {
             </div>
         `;
     } else {
-        // Group tips by date
-        const groupedTips = groupTipsByDate(tips);
+        // Check if mobile device
+        const isMobile = window.innerWidth <= 768;
         
-        tipsContainer.innerHTML = Object.keys(groupedTips).map(date => `
-            <div class="date-section">
-                <h3 class="date-header">${formatDate(date)}</h3>
-                <div class="tips-for-date">
-                    ${groupedTips[date].map(tip => `
-                        <div class="tip-item ${getCardBorderClass(tip.status)}">
-                            <div class="tip-header">
-                                <div class="tip-match">${tip.match}</div>
-                                <div class="tip-time">${tip.time}</div>
-                            </div>
-                            <div class="tip-details">
-                                <div class="tip-detail">
-                                    <div class="tip-detail-label">League</div>
-                                    <div class="tip-detail-value">${tip.league}</div>
+        if (isMobile) {
+            // Mobile horizontal scroll layout
+            tipsContainer.innerHTML = `
+                <div class="mobile-tips-container" id="mobileTipsContainer">
+                    ${tips.map(tip => createMobileTipCard(tip)).join('')}
+                </div>
+                <div class="mobile-scroll-indicators" id="mobileScrollIndicators">
+                    ${tips.map((_, index) => `<div class="mobile-scroll-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`).join('')}
+                </div>
+            `;
+            
+            // Setup mobile scroll functionality
+            setupMobileScroll();
+        } else {
+            // Desktop layout (existing)
+            const groupedTips = groupTipsByDate(tips);
+            
+            tipsContainer.innerHTML = Object.keys(groupedTips).map(date => `
+                <div class="date-section">
+                    <h3 class="date-header">${formatDate(date)}</h3>
+                    <div class="tips-for-date">
+                        ${groupedTips[date].map(tip => `
+                            <div class="tip-item ${getCardBorderClass(tip.status)}">
+                                <div class="tip-header">
+                                    <div class="tip-match">${tip.match}</div>
+                                    <div class="tip-time">${tip.time}</div>
                                 </div>
-                                <div class="tip-detail">
-                                    <div class="tip-detail-label">Prediction</div>
-                                    <div class="tip-detail-value">${tip.prediction}</div>
-                                </div>
-                                <div class="tip-detail">
-                                    <div class="tip-detail-label">Odds</div>
-                                    <div class="tip-detail-value">${tip.odds}</div>
-                                </div>
-                                <div class="tip-detail">
-                                    <div class="tip-detail-label">Status</div>
-                                    <div class="tip-detail-value">
-                                        <span class="status-badge ${getStatusClass(tip.status || 'pending')}">
-                                            ${getStatusIcon(tip.status || 'pending')} ${(tip.status || 'pending').toUpperCase()}
-                                        </span>
+                                <div class="tip-details">
+                                    <div class="tip-detail">
+                                        <div class="tip-detail-label">League</div>
+                                        <div class="tip-detail-value">${tip.league}</div>
+                                    </div>
+                                    <div class="tip-detail">
+                                        <div class="tip-detail-label">Prediction</div>
+                                        <div class="tip-detail-value">${tip.prediction}</div>
+                                    </div>
+                                    <div class="tip-detail">
+                                        <div class="tip-detail-label">Odds</div>
+                                        <div class="tip-detail-value">${tip.odds}</div>
+                                    </div>
+                                    <div class="tip-detail">
+                                        <div class="tip-detail-label">Status</div>
+                                        <div class="tip-detail-value">
+                                            <span class="status-badge ${getStatusClass(tip.status || 'pending')}">
+                                                ${getStatusIcon(tip.status || 'pending')} ${(tip.status || 'pending').toUpperCase()}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
+                                ${isAdmin ? `
+                                    <div class="tip-actions">
+                                        <button class="btn btn-secondary" onclick="editTip('${type}', ${tip.id})">Edit</button>
+                                        <button class="btn btn-danger" onclick="deleteTip('${type}', ${tip.id})">Delete</button>
+                                    </div>
+                                ` : ''}
                             </div>
-                            ${isAdmin ? `
-                                <div class="tip-actions">
-                                    <button class="btn btn-secondary" onclick="editTip('${type}', ${tip.id})">Edit</button>
-                                    <button class="btn btn-danger" onclick="deleteTip('${type}', ${tip.id})">Delete</button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `).join('')}
+                        `).join('')}
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
+        }
     }
     
     // Show admin panel if user is admin
@@ -524,6 +542,93 @@ function displayTips(tips, type) {
         adminPanel.style.display = 'block';
         setupAdminPanel(type);
     }
+}
+
+// Create mobile tip card
+function createMobileTipCard(tip) {
+    const statusClass = getStatusClass(tip.status || 'pending');
+    const statusIcon = getStatusIcon(tip.status || 'pending');
+    
+    return `
+        <div class="mobile-tip-card">
+            <div class="mobile-tip-card-header">
+                <div class="mobile-tip-league">${tip.league}</div>
+                <div class="mobile-tip-time">${tip.time}</div>
+            </div>
+            <div class="mobile-tip-teams">${tip.match}</div>
+            <div class="mobile-tip-prediction">${tip.prediction}</div>
+            <div class="mobile-tip-status ${statusClass}">
+                ${statusIcon} ${(tip.status || 'pending').toUpperCase()}
+            </div>
+        </div>
+    `;
+}
+
+// Setup mobile scroll functionality
+function setupMobileScroll() {
+    const container = document.getElementById('mobileTipsContainer');
+    const indicators = document.getElementById('mobileScrollIndicators');
+    
+    if (!container || !indicators) return;
+    
+    let currentIndex = 0;
+    const cards = container.querySelectorAll('.mobile-tip-card');
+    const dots = indicators.querySelectorAll('.mobile-scroll-dot');
+    
+    // Update active dot
+    function updateActiveDot(index) {
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+    }
+    
+    // Handle scroll events
+    container.addEventListener('scroll', () => {
+        const scrollLeft = container.scrollLeft;
+        const cardWidth = cards[0]?.offsetWidth || 280;
+        const gap = 16; // 1rem gap
+        const newIndex = Math.round(scrollLeft / (cardWidth + gap));
+        
+        if (newIndex !== currentIndex && newIndex < cards.length) {
+            currentIndex = newIndex;
+            updateActiveDot(currentIndex);
+        }
+    });
+    
+    // Handle dot clicks
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            const cardWidth = cards[0]?.offsetWidth || 280;
+            const gap = 16;
+            container.scrollTo({
+                left: index * (cardWidth + gap),
+                behavior: 'smooth'
+            });
+            currentIndex = index;
+            updateActiveDot(currentIndex);
+        });
+    });
+    
+    // Handle touch gestures
+    let startX = 0;
+    let startY = 0;
+    
+    container.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+    
+    container.addEventListener('touchmove', (e) => {
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = Math.abs(currentX - startX);
+        const diffY = Math.abs(currentY - startY);
+        
+        // Prevent vertical scroll if horizontal scroll is detected
+        if (diffX > diffY) {
+            e.preventDefault();
+        }
+    });
 }
 
 // Group tips by date
@@ -1126,11 +1231,11 @@ function getStatusClass(status) {
     // Handle cases where status might be null or undefined
     const tipStatus = status || 'pending';
     const classes = {
-        'won': 'status-won',
-        'lost': 'status-lost',
-        'pending': 'status-pending'
+        'won': 'status-won won',
+        'lost': 'status-lost lost',
+        'pending': 'status-pending pending'
     };
-    return classes[tipStatus] || 'status-pending';
+    return classes[tipStatus] || 'status-pending pending';
 }
 
 // Get status icon

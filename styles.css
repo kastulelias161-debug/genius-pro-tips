@@ -1449,4 +1449,130 @@ body {
         transform: scale(1.02);
         transition: transform 0.1s ease;
     }
+    
+    /* Option 7: Horizontal Scroll Mobile Layout */
+    .mobile-tips-container {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1rem;
+        padding: 1rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .mobile-tips-container::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .mobile-tip-card {
+        flex: 0 0 auto;
+        width: 280px;
+        background: #1a1a1a;
+        border: 2px dashed #fff;
+        border-radius: 12px;
+        padding: 1rem;
+        color: white;
+        scroll-snap-align: start;
+        position: relative;
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .mobile-tip-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .mobile-tip-league {
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+    }
+    
+    .mobile-tip-time {
+        font-size: 14px;
+        font-weight: 600;
+        color: #4a7c59;
+        background: rgba(74, 124, 89, 0.2);
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+    }
+    
+    .mobile-tip-teams {
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .mobile-tip-prediction {
+        font-size: 12px;
+        color: #ccc;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .mobile-tip-status {
+        font-size: 14px;
+        font-weight: 700;
+        text-align: center;
+        padding: 0.5rem;
+        border-radius: 8px;
+        margin-top: auto;
+    }
+    
+    .mobile-tip-status.pending {
+        color: #FFA500;
+        background: rgba(255, 165, 0, 0.1);
+    }
+    
+    .mobile-tip-status.won {
+        color: #00FF00;
+        background: rgba(0, 255, 0, 0.1);
+    }
+    
+    .mobile-tip-status.lost {
+        color: #FF0000;
+        background: rgba(255, 0, 0, 0.1);
+    }
+    
+    /* Scroll indicators */
+    .mobile-scroll-indicators {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .mobile-scroll-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #666;
+        transition: background 0.3s ease;
+    }
+    
+    .mobile-scroll-dot.active {
+        background: #4a7c59;
+    }
+    
+    /* Responsive card sizing */
+    @media (max-width: 480px) {
+        .mobile-tip-card {
+            width: 240px;
+        }
+    }
+    
+    @media (min-width: 481px) and (max-width: 768px) {
+        .mobile-tip-card {
+            width: 280px;
+        }
+    }
 }
