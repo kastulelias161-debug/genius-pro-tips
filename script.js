@@ -560,6 +560,7 @@ function createMobileTipCard(tip, type) {
             </div>
             <div class="mobile-tip-teams">${tip.match}</div>
             <div class="mobile-tip-prediction">${tip.prediction}</div>
+            <div class="mobile-tip-odds">Odds: ${tip.odds}</div>
             <div class="mobile-tip-status ${statusClass}">
                 ${statusIcon} ${(tip.status || 'pending').toUpperCase()}
             </div>

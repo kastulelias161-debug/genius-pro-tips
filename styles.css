@@ -1509,6 +1509,17 @@ body {
         text-align: center;
     }
     
+    .mobile-tip-odds {
+        font-size: 14px;
+        color: #4a7c59;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        background: rgba(74, 124, 89, 0.1);
+        padding: 0.5rem;
+        border-radius: 6px;
+    }
+    
     .mobile-tip-status {
         font-size: 14px;
         font-weight: 700;
