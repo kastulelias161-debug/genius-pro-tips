@@ -475,10 +475,19 @@ function displayTips(tips, type) {
         const isMobile = window.innerWidth <= 768;
         
         if (isMobile) {
-            // Mobile vertical layout
+            // Mobile vertical layout with date headers
+            const groupedTips = groupTipsByDate(tips);
+            
             tipsContainer.innerHTML = `
                 <div class="mobile-tips-container" id="mobileTipsContainer">
-                    ${tips.map(tip => createMobileTipCard(tip, type)).join('')}
+                    ${Object.keys(groupedTips).map(date => `
+                        <div class="mobile-date-section">
+                            <h3 class="mobile-date-header">${formatDate(date)}</h3>
+                            <div class="mobile-tips-for-date">
+                                ${groupedTips[date].map(tip => createMobileTipCard(tip, type)).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             `;
         } else {
