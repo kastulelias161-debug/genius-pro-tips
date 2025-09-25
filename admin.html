@@ -140,7 +140,7 @@
                                 <option value="train">Train Tips</option>
                             </select>
                         </div>
-                        <button class="btn btn-primary" type="button" onclick="openAddTipModal()">+ Add New Tip</button>
+                        <button class="btn btn-primary" type="button" data-open-add-tip>+ Add New Tip</button>
                     </div>
 
                     <!-- Add New Tip Form -->
@@ -305,8 +305,10 @@
                 tipTypeSelect.addEventListener('change', loadTipsForManagement);
             }
             // Floating button
-            const fab = document.getElementById('fabAddTip');
-            if (fab) fab.addEventListener('click', openAddTipModal);
+            // Attach open handlers to any element with data-open-add-tip
+            document.querySelectorAll('[data-open-add-tip]').forEach(btn => {
+                btn.addEventListener('click', openAddTipModal);
+            });
 
             // Click outside modal to close
             const overlay = document.getElementById('addTipModal');
@@ -481,6 +483,6 @@
     </div>
 
     <!-- Floating Add Button -->
-    <button id="fabAddTip" class="floating-add-btn" title="Add Tip">+</button>
+    <button id="fabAddTip" class="floating-add-btn" title="Add Tip" data-open-add-tip>+</button>
 </body>
 </html>
