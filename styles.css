@@ -1130,6 +1130,27 @@ body {
     background: #3e6b4c;
 }
 
+/* Admin Tip Type Tabs */
+.tip-type-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tip-tab {
+    border: 1px solid #4a7c59;
+    color: #2c5530;
+    background: #fff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.tip-tab.active {
+    background: #4a7c59;
+    color: #fff;
+}
+
 @media (max-width: 480px) {
     .hero-title {
         font-size: 1.5rem;

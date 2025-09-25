@@ -131,14 +131,11 @@
                 <div class="admin-management">
                     <h3>🛠️ Management Tools</h3>
                     <div class="tip-type-selector" style="display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap">
-                        <div>
-                            <label for="tipTypeSelect">Select Tip Type:</label>
-                            <select id="tipTypeSelect" onchange="loadTipsForManagement()">
-                                <option value="today">Today Tips</option>
-                                <option value="weekly">Weekly Tips</option>
-                                <option value="monthly">Monthly Tips</option>
-                                <option value="train">Train Tips</option>
-                            </select>
+                        <div class="tip-type-tabs" role="tablist" aria-label="Tip Types">
+                            <button class="tip-tab active" data-tip-tab="today" role="tab" aria-selected="true">Today</button>
+                            <button class="tip-tab" data-tip-tab="weekly" role="tab" aria-selected="false">Weekly</button>
+                            <button class="tip-tab" data-tip-tab="monthly" role="tab" aria-selected="false">Monthly</button>
+                            <button class="tip-tab" data-tip-tab="train" role="tab" aria-selected="false">Train</button>
                         </div>
                         <button class="btn btn-primary" type="button" data-open-add-tip>+ Add New Tip</button>
                     </div>
@@ -304,10 +301,30 @@
             if (tipTypeSelect) {
                 tipTypeSelect.addEventListener('change', loadTipsForManagement);
             }
-            // Floating button
             // Attach open handlers to any element with data-open-add-tip
             document.querySelectorAll('[data-open-add-tip]').forEach(btn => {
                 btn.addEventListener('click', openAddTipModal);
+            });
+
+            // Tabs logic
+            document.querySelectorAll('[data-tip-tab]').forEach(tab => {
+                tab.addEventListener('click', function(){
+                    const type = this.getAttribute('data-tip-tab');
+                    document.querySelectorAll('[data-tip-tab]').forEach(t=>{
+                        const isActive = t === tab;
+                        t.classList.toggle('active', isActive);
+                        t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    });
+                    // Refresh UI for selected type
+                    if (typeof setupAdminPanel === 'function') setupAdminPanel(type);
+                    if (typeof loadTipsForManagementTab === 'function') {
+                        loadTipsForManagementTab(type);
+                    } else if (typeof loadTipsForManagement === 'function') {
+                        // Fallback to existing loader via URL param
+                        window.history.replaceState(null, '', `?type=${type}`);
+                        loadTipsForManagement();
+                    }
+                });
             });
 
             // Click outside modal to close
@@ -388,9 +405,15 @@
 
         // Load tips for management
         async function loadTipsForManagement() {
-            const tipType = document.getElementById('tipTypeSelect').value;
+            const params = new URLSearchParams(window.location.search);
+            const tipType = params.get('type') || 'today';
             const tips = await getTipsData(tipType);
             displayTipsForManagement(tips, tipType);
+        }
+
+        async function loadTipsForManagementTab(type) {
+            const tips = await getTipsData(type);
+            displayTipsForManagement(tips, type);
         }
 
         // Display tips for management
