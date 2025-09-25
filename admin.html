@@ -137,11 +137,11 @@
                             <button class="tip-tab" data-tip-tab="monthly" role="tab" aria-selected="false">Monthly</button>
                             <button class="tip-tab" data-tip-tab="train" role="tab" aria-selected="false">Train</button>
                         </div>
-                        <button class="btn btn-primary" type="button" data-open-add-tip>+ Add New Tip</button>
+                        <button class="btn btn-primary" type="button" id="btnScrollAddTip">+ Add New Tip</button>
                     </div>
 
                     <!-- Add New Tip Form -->
-                    <div class="admin-section" id="inlineAddTipSection" style="display:none;">
+                    <div class="admin-section" id="inlineAddTipSection">
                         <h4>➕ Add New Tip</h4>
                         <form id="addTipForm">
                             <div class="tip-form">
@@ -300,6 +300,14 @@
             const tipTypeSelect = document.getElementById('tipTypeSelect');
             if (tipTypeSelect) {
                 tipTypeSelect.addEventListener('change', loadTipsForManagement);
+            }
+            // Scroll to inline add form when top button clicked (fallback)
+            const btnScroll = document.getElementById('btnScrollAddTip');
+            if (btnScroll) {
+                btnScroll.addEventListener('click', function(){
+                    const el = document.getElementById('inlineAddTipSection');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
             }
             // Attach open handlers to any element with data-open-add-tip
             document.querySelectorAll('[data-open-add-tip]').forEach(btn => {
