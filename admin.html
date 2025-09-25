@@ -221,7 +221,18 @@
         // Modal helpers
         function openAddTipModal() {
             const overlay = document.getElementById('addTipModal');
-            if (overlay) overlay.style.display = 'flex';
+            if (overlay) {
+                overlay.style.display = 'flex';
+                // Configure modal fields for selected type
+                const type = document.getElementById('tipTypeSelect')?.value || 'today';
+                if (typeof setupAdminPanel === 'function') {
+                    // Re-run to toggle date vs range (safe, idempotent)
+                    setupAdminPanel(type);
+                }
+                // Focus first input for faster entry
+                const first = document.getElementById(type === 'train' ? 'startDateModal' : 'dateModal');
+                if (first) first.focus();
+            }
         }
         function closeAddTipModal() {
             const overlay = document.getElementById('addTipModal');
@@ -296,6 +307,16 @@
             // Floating button
             const fab = document.getElementById('fabAddTip');
             if (fab) fab.addEventListener('click', openAddTipModal);
+
+            // Click outside modal to close
+            const overlay = document.getElementById('addTipModal');
+            if (overlay) {
+                overlay.addEventListener('click', function(e){
+                    if (e.target === overlay) {
+                        closeAddTipModal();
+                    }
+                });
+            }
         }
 
         // Handle admin login from admin page
