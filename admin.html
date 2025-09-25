@@ -221,7 +221,7 @@
             if (overlay) {
                 overlay.style.display = 'flex';
                 // Configure modal fields for selected type
-                const type = document.getElementById('tipTypeSelect')?.value || 'today';
+                const type = document.querySelector('.tip-tab.active')?.getAttribute('data-tip-tab') || 'today';
                 if (typeof setupAdminPanel === 'function') {
                     // Re-run to toggle date vs range (safe, idempotent)
                     setupAdminPanel(type);
@@ -393,6 +393,12 @@
             if (typeof loadTipsForManagement === 'function') {
                 loadTipsForManagement();
             }
+
+            // Ensure admin form fields reflect active tab
+            const activeType = document.querySelector('.tip-tab.active')?.getAttribute('data-tip-tab') || 'today';
+            if (typeof setupAdminPanel === 'function') {
+                setupAdminPanel(activeType);
+            }
             
             // Mobile optimization
             if (window.innerWidth <= 768) {
@@ -407,7 +413,7 @@
         function handleAddTipFromAdmin(e) {
             e.preventDefault();
             
-            const tipType = document.getElementById('tipTypeSelect').value;
+            const tipType = document.querySelector('.tip-tab.active')?.getAttribute('data-tip-tab') || 'today';
             handleAddTip(e, tipType);
         }
 
