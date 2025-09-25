@@ -628,6 +628,11 @@ function setupAdminPanel(type) {
         const singleDateGroup = document.getElementById('singleDateGroup');
         const dateRangeGroup = document.getElementById('dateRangeGroup');
         const endDateGroup = document.getElementById('endDateGroup');
+
+        // Also map modal groups if present
+        const singleDateGroupModal = document.getElementById('singleDateGroupModal');
+        const dateRangeGroupModal = document.getElementById('dateRangeGroupModal');
+        const endDateGroupModal = document.getElementById('endDateGroupModal');
         
         console.log('Date groups found:', {
             singleDateGroup: !!singleDateGroup,
@@ -643,6 +648,12 @@ function setupAdminPanel(type) {
             document.getElementById('endDate').required = true;
             document.getElementById('date').required = false;
             console.log('Train tips: Using date range');
+
+            if (singleDateGroupModal && dateRangeGroupModal && endDateGroupModal) {
+                singleDateGroupModal.style.display = 'none';
+                dateRangeGroupModal.style.display = 'block';
+                endDateGroupModal.style.display = 'block';
+            }
         } else {
             singleDateGroup.style.display = 'block';
             dateRangeGroup.style.display = 'none';
@@ -651,6 +662,12 @@ function setupAdminPanel(type) {
             document.getElementById('startDate').required = false;
             document.getElementById('endDate').required = false;
             console.log('Single date tips: Using single date');
+
+            if (singleDateGroupModal && dateRangeGroupModal && endDateGroupModal) {
+                singleDateGroupModal.style.display = 'block';
+                dateRangeGroupModal.style.display = 'none';
+                endDateGroupModal.style.display = 'none';
+            }
         }
         
         // Mobile-specific improvements

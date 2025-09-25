@@ -130,20 +130,21 @@
                 <!-- Management Tools -->
                 <div class="admin-management">
                     <h3>🛠️ Management Tools</h3>
-                    
-                    <!-- Tip Type Selector -->
-                    <div class="tip-type-selector">
-                        <label for="tipTypeSelect">Select Tip Type:</label>
-                        <select id="tipTypeSelect" onchange="loadTipsForManagement()">
-                            <option value="today">Today Tips</option>
-                            <option value="weekly">Weekly Tips</option>
-                            <option value="monthly">Monthly Tips</option>
-                            <option value="train">Train Tips</option>
-                        </select>
+                    <div class="tip-type-selector" style="display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap">
+                        <div>
+                            <label for="tipTypeSelect">Select Tip Type:</label>
+                            <select id="tipTypeSelect" onchange="loadTipsForManagement()">
+                                <option value="today">Today Tips</option>
+                                <option value="weekly">Weekly Tips</option>
+                                <option value="monthly">Monthly Tips</option>
+                                <option value="train">Train Tips</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" type="button" onclick="openAddTipModal()">+ Add New Tip</button>
                     </div>
 
                     <!-- Add New Tip Form -->
-                    <div class="admin-section">
+                    <div class="admin-section" id="inlineAddTipSection" style="display:none;">
                         <h4>➕ Add New Tip</h4>
                         <form id="addTipForm">
                             <div class="tip-form">
@@ -217,6 +218,15 @@
     <!-- Temporary mobile debugging console -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>
+        // Modal helpers
+        function openAddTipModal() {
+            const overlay = document.getElementById('addTipModal');
+            if (overlay) overlay.style.display = 'flex';
+        }
+        function closeAddTipModal() {
+            const overlay = document.getElementById('addTipModal');
+            if (overlay) overlay.style.display = 'none';
+        }
         // Only load Eruda on mobile devices
         if (window.innerWidth <= 768) {
             eruda.init();
@@ -245,8 +255,37 @@
 
             // Setup add tip form
             const addTipForm = document.getElementById('addTipForm');
-            if (addTipForm) {
-                addTipForm.addEventListener('submit', handleAddTipFromAdmin);
+            if (addTipForm) addTipForm.addEventListener('submit', handleAddTipFromAdmin);
+
+            const addTipFormModal = document.getElementById('addTipFormModal');
+            if (addTipFormModal) {
+                addTipFormModal.addEventListener('submit', function(e){
+                    e.preventDefault();
+                    // Build a synthetic event with a FormData-compatible target
+                    const tipType = document.getElementById('tipTypeSelect').value;
+                    // Map modal inputs to hidden inline form to reuse existing handler
+                    const map = [
+                        ['dateModal','date'],
+                        ['startDateModal','startDate'],
+                        ['endDateModal','endDate'],
+                        ['matchModal','match'],
+                        ['leagueModal','league'],
+                        ['timeModal','time'],
+                        ['predictionModal','prediction'],
+                        ['oddsModal','odds']
+                    ];
+                    map.forEach(([fromId,toId])=>{
+                        const from = document.getElementById(fromId);
+                        const to = document.getElementById(toId);
+                        if (from && to) to.value = from.value;
+                    });
+                    // Submit using existing handler
+                    handleAddTipFromAdmin(new Event('submit'));
+                    // Close modal
+                    closeAddTipModal();
+                    // Clear modal fields
+                    addTipFormModal.reset();
+                });
             }
 
             // Setup tip type selector
@@ -254,6 +293,9 @@
             if (tipTypeSelect) {
                 tipTypeSelect.addEventListener('change', loadTipsForManagement);
             }
+            // Floating button
+            const fab = document.getElementById('fabAddTip');
+            if (fab) fab.addEventListener('click', openAddTipModal);
         }
 
         // Handle admin login from admin page
@@ -367,5 +409,57 @@
             `).join('');
         }
     </script>
+
+    <!-- Add Tip Modal -->
+    <div id="addTipModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="addTipTitle">
+        <div class="modal">
+            <div class="modal-header">
+                <h4 id="addTipTitle" class="modal-title">➕ Add New Tip</h4>
+                <button class="modal-close" onclick="closeAddTipModal()" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addTipFormModal">
+                    <div class="tip-form">
+                        <div class="form-group" id="singleDateGroupModal">
+                            <label for="dateModal">Date:</label>
+                            <input type="date" id="dateModal" name="date">
+                        </div>
+                        <div class="form-group" id="dateRangeGroupModal" style="display:none;">
+                            <label for="startDateModal">Start Date:</label>
+                            <input type="date" id="startDateModal" name="startDate">
+                        </div>
+                        <div class="form-group" id="endDateGroupModal" style="display:none;">
+                            <label for="endDateModal">End Date:</label>
+                            <input type="date" id="endDateModal" name="endDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="matchModal">Match:</label>
+                            <input type="text" id="matchModal" name="match" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="leagueModal">League:</label>
+                            <input type="text" id="leagueModal" name="league" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="timeModal">Time:</label>
+                            <input type="text" id="timeModal" name="time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="predictionModal">Prediction:</label>
+                            <input type="text" id="predictionModal" name="prediction" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="oddsModal">Odds:</label>
+                            <input type="text" id="oddsModal" name="odds" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Tip</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Add Button -->
+    <button id="fabAddTip" class="floating-add-btn" title="Add Tip">+</button>
 </body>
 </html>
