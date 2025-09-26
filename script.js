@@ -473,10 +473,11 @@ function displayTips(tips, type) {
     } else {
         // Check if mobile device
         const isMobile = window.innerWidth <= 768;
+        // Group tips by date (normalize Train Tips ranges)
+        const groupedTips = groupTipsByDate(tips, type);
         
         if (isMobile) {
             // Mobile vertical layout with date headers
-            const groupedTips = groupTipsByDate(tips);
             
             tipsContainer.innerHTML = `
                 <div class="mobile-tips-container" id="mobileTipsContainer">
@@ -492,7 +493,6 @@ function displayTips(tips, type) {
             `;
         } else {
             // Desktop layout (existing)
-            const groupedTips = groupTipsByDate(tips);
             
             tipsContainer.innerHTML = Object.keys(groupedTips).map(date => `
                 <div class="date-section">
@@ -575,15 +575,32 @@ function createMobileTipCard(tip, type) {
 }
 
 // Group tips by date
-function groupTipsByDate(tips) {
+function groupTipsByDate(tips, type) {
     return tips.reduce((groups, tip) => {
-        const date = tip.date;
-        if (!groups[date]) {
-            groups[date] = [];
+        let key = tip.date;
+        if (type === 'train') {
+            key = normalizeTrainRange(key);
         }
-        groups[date].push(tip);
+        if (!groups[key]) {
+            groups[key] = [];
+        }
+        groups[key].push(tip);
         return groups;
     }, {});
+}
+
+// Normalize Train Tips range to a stable key, e.g., "YYYY-MM-DD|YYYY-MM-DD"
+function normalizeTrainRange(value) {
+    if (!value) return '';
+    let v = String(value).trim();
+    if (v.includes('|')) return v;
+    // unify common separators to ' to '
+    v = v.replace(/\s*[–—-]\s*/g, ' to ');
+    const parts = v.split(/\s+to\s+/i);
+    if (parts.length === 2) {
+        return `${parts[0].trim()}|${parts[1].trim()}`;
+    }
+    return v;
 }
 
 // Format date for display
@@ -604,6 +621,12 @@ function formatDate(dateString) {
         const endFormatted = end.toLocaleDateString('en-GB', options);
         
         return `${startFormatted} - ${endFormatted}`;
+    } else if (dateString.includes('|')) {
+        const [startDate, endDate] = dateString.split('|');
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        return `${start.toLocaleDateString('en-GB', options)} - ${end.toLocaleDateString('en-GB', options)}`;
     } else {
         // Single date
         const date = new Date(dateString);
@@ -730,8 +753,7 @@ async function handleAddTip(e, type) {
     if (type === 'train') {
         const startDate = formData.get('startDate');
         const endDate = formData.get('endDate');
-        dateValue = `${startDate} to ${endDate}`;
-        console.log('Train tips date range:', dateValue);
+        dateValue = `${startDate}|${endDate}`; // normalized storage
     } else {
         dateValue = formData.get('date');
         console.log('Single date value:', dateValue);
@@ -800,7 +822,7 @@ async function editTip(type, tipId) {
         
         let newDate;
         if (type === 'train') {
-            newDate = prompt('Date Range (YYYY-MM-DD to YYYY-MM-DD):', tip.date);
+            newDate = prompt('Date Range (YYYY-MM-DD|YYYY-MM-DD):', tip.date);
         } else {
             newDate = prompt('Date (YYYY-MM-DD):', tip.date);
         }
