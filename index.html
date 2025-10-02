@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genius Pro Tips - Premium Football Betting Predictions</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Get premium football betting tips and predictions from Genius Pro Tips. Expert analysis for today, weekly, monthly, and train betting tips with high success rates.">
+    <meta name="keywords" content="football tips, betting tips, football predictions, sports betting, genius tips, pro tips, football analysis, betting advice, odds, football odds, betting odds, match predictions, football betting, sports tips, expert tips, premium tips, daily tips, weekly tips, monthly tips, train tips">
+    <meta name="author" content="Genius Pro Tips">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Genius Pro Tips - Premium Football Betting Predictions">
+    <meta property="og:description" content="Get premium football betting tips and predictions from Genius Pro Tips. Expert analysis for today, weekly, monthly, and train betting tips.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://genius-pro-tips.vercel.app">
+    <meta property="og:image" content="https://genius-pro-tips.vercel.app/favicon.ico">
+    
+    <!-- Google AdSense Meta Tags -->
+    <meta name="google-adsense-account" content="ca-pub-2565386197658799">
+    <meta name="google-site-verification" content="your-verification-code-here">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%231a1a1a'/><text x='16' y='22' font-family='Arial' font-size='16' font-weight='bold' text-anchor='middle' fill='%23FFD700'>GT</text></svg>" type="image/svg+xml">
+    <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%231a1a1a'/><text x='16' y='22' font-family='Arial' font-size='16' font-weight='bold' text-anchor='middle' fill='%23FFD700'>GT</text></svg>" type="image/svg+xml">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Google AdSense Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2565386197658799" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo" id="logo">Genius Tips</h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="contact.html" class="nav-link">Contact Us</a>
+                <a href="privacy.html" class="nav-link">Privacy Policy</a>
+                <a href="terms.html" class="nav-link">Terms & Conditions</a>
+                <a href="#" class="nav-link" onclick="logout()" id="logoutBtn" style="display: none;">Logout</a>
+            </nav>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Mobile Navigation Menu -->
+            <nav class="mobile-nav">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="contact.html" class="nav-link">Contact Us</a>
+                <a href="privacy.html" class="nav-link">Privacy Policy</a>
+                <a href="terms.html" class="nav-link">Terms & Conditions</a>
+                <a href="#" class="nav-link" onclick="logout()" id="logoutBtnMobile" style="display: none;">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <h2 class="hero-title">Welcome to Genius Tips</h2>
+                <p class="hero-subtitle">Your ultimate destination for football betting tips</p>
+            </section>
+
+            <!-- Ad Banner - Top of Content -->
+            <div class="ad-container ad-banner-top">
+                <!-- AdSense Ad Unit -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-2565386197658799"
+                     data-ad-slot="1234567890"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            <!-- Tips Grid -->
+            <section class="tips-grid">
+                <div class="grid-item" onclick="navigateToTips('today')">
+                    <div class="grid-card">
+                        <div class="grid-icon">⚽</div>
+                        <h3 class="grid-title">Today Tips</h3>
+                        <p class="grid-description">Get the latest tips for today's matches</p>
+                    </div>
+                </div>
+
+                <div class="grid-item" onclick="navigateToTips('weekly')">
+                    <div class="grid-card">
+                        <div class="grid-icon">📅</div>
+                        <h3 class="grid-title">Weekly Tips</h3>
+                        <p class="grid-description">Weekly analysis and predictions</p>
+                    </div>
+                </div>
+
+                <div class="grid-item" onclick="navigateToTips('monthly')">
+                    <div class="grid-card">
+                        <div class="grid-icon">📊</div>
+                        <h3 class="grid-title">Monthly Tips</h3>
+                        <p class="grid-description">Monthly insights and strategies</p>
+                    </div>
+                </div>
+
+                <div class="grid-item" onclick="navigateToTips('train')">
+                    <div class="grid-card">
+                        <div class="grid-icon">🚂</div>
+                        <h3 class="grid-title">Our Train Tips</h3>
+                        <p class="grid-description">Special train betting strategies</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ad Banner - Bottom of Content -->
+            <div class="ad-container ad-banner-bottom">
+                <!-- AdSense Ad Unit -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-2565386197658799"
+                     data-ad-slot="0987654321"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAdminModal()">&times;</span>
+            <h2>Admin Login</h2>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hidden Admin Access - Double click on logo to access -->
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Genius Tips. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

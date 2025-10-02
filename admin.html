@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Genius Pro Tips</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%231a1a1a'/><text x='16' y='22' font-family='Arial' font-size='16' font-weight='bold' text-anchor='middle' fill='%23FFD700'>GT</text></svg>" type="image/svg+xml">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">Genius Tips - Admin</h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">← Back to Website</a>
+                <a href="#" class="nav-link" onclick="logout()" id="logoutBtn" style="display: none;">Logout</a>
+            </nav>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Mobile Navigation -->
+            <nav class="mobile-nav">
+                <a href="index.html" class="nav-link">← Back to Website</a>
+                <a href="#" class="nav-link" onclick="logout()" id="logoutBtnMobile" style="display: none;">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Admin Login Section -->
+            <div id="adminLoginSection" class="admin-login-section">
+                <div class="login-card">
+                    <h2>🔐 Admin Login Required</h2>
+                    <p>Please login to access the admin dashboard</p>
+                    <form id="adminLoginForm" novalidate>
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" required 
+                                   placeholder="Enter your username"
+                                   autocomplete="username"
+                                   minlength="3"
+                                   maxlength="20">
+                            <span class="error-message" id="username-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required 
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password"
+                                   minlength="6"
+                                   maxlength="50">
+                            <span class="error-message" id="password-error"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-text">Login to Dashboard</span>
+                            <span class="btn-loading" style="display: none;">Logging in...</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard (Hidden until login) -->
+            <div id="adminDashboard" class="admin-dashboard-container" style="display: none;">
+                <!-- Statistics Dashboard -->
+                <div class="admin-dashboard">
+                    <h3>📊 Admin Dashboard</h3>
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">⚽</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="todayCount">0</div>
+                                <div class="stat-label">Today Tips</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="weeklyCount">0</div>
+                                <div class="stat-label">Weekly Tips</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="monthlyCount">0</div>
+                                <div class="stat-label">Monthly Tips</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🚂</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="trainCount">0</div>
+                                <div class="stat-label">Train Tips</div>
+                            </div>
+                        </div>
+                    </div>
+                        <div class="dashboard-summary">
+                            <div class="summary-card">
+                                <h4>📈 Total Posts</h4>
+                                <div class="summary-number" id="totalCount">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>🏆 Success Rate</h4>
+                                <div class="summary-number" id="successRate">0%</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>✅ Completed Matches</h4>
+                                <div class="summary-number" id="completedCount">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>🕒 Last Updated</h4>
+                                <div class="summary-text" id="lastUpdated">Loading...</div>
+                            </div>
+                        </div>
+                </div>
+
+                <!-- Management Tools -->
+                <div class="admin-management">
+                    <h3>🛠️ Management Tools</h3>
+                    <div class="tip-type-selector" style="display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap">
+                        <div class="tip-type-tabs" role="tablist" aria-label="Tip Types">
+                            <button class="tip-tab active" data-tip-tab="today" role="tab" aria-selected="true">Today</button>
+                            <button class="tip-tab" data-tip-tab="weekly" role="tab" aria-selected="false">Weekly</button>
+                            <button class="tip-tab" data-tip-tab="monthly" role="tab" aria-selected="false">Monthly</button>
+                            <button class="tip-tab" data-tip-tab="train" role="tab" aria-selected="false">Train</button>
+                        </div>
+                        <button class="btn btn-primary" type="button" id="btnScrollAddTip">+ Add New Tip</button>
+                    </div>
+
+                    <!-- Add New Tip Form -->
+                    <div class="admin-section" id="inlineAddTipSection">
+                        <h4>➕ Add New Tip</h4>
+                        <form id="addTipForm">
+                            <div class="tip-form">
+                                <div class="form-group" id="singleDateGroup">
+                                    <label for="date">Date:</label>
+                                    <input type="date" id="date" name="date" required>
+                                </div>
+                                <div class="form-group" id="dateRangeGroup" style="display: none;">
+                                    <label for="startDate">Start Date:</label>
+                                    <input type="date" id="startDate" name="startDate">
+                                </div>
+                                <div class="form-group" id="endDateGroup" style="display: none;">
+                                    <label for="endDate">End Date:</label>
+                                    <input type="date" id="endDate" name="endDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="match">Match:</label>
+                                    <input type="text" id="match" name="match" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="league">League:</label>
+                                    <input type="text" id="league" name="league" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="time">Time:</label>
+                                    <input type="text" id="time" name="time" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prediction">Prediction:</label>
+                                    <input type="text" id="prediction" name="prediction" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="odds">Odds:</label>
+                                    <input type="text" id="odds" name="odds" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Tip</button>
+                        </form>
+                    </div>
+
+                    <!-- Match Results Management -->
+                    <div class="admin-section">
+                        <h4>🏆 Match Results Management</h4>
+                        <p>Update match results to track your success rate</p>
+                        <div id="matchResultsContainer">
+                            <!-- Match results will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Tips Management -->
+                    <div class="admin-section">
+                        <h4>📝 Manage Existing Tips</h4>
+                        <div id="tipsManagementContainer">
+                            <!-- Tips will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Genius Tips Admin Panel. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    
+    <!-- Temporary mobile debugging console -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+        // Modal helpers
+        function openAddTipModal() {
+            const overlay = document.getElementById('addTipModal');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                // Configure modal fields for selected type
+                const type = document.querySelector('.tip-tab.active')?.getAttribute('data-tip-tab') || 'today';
+                if (typeof setupAdminPanel === 'function') {
+                    // Re-run to toggle date vs range (safe, idempotent)
+                    setupAdminPanel(type);
+                }
+                // Focus first input for faster entry
+                const first = document.getElementById(type === 'train' ? 'startDateModal' : 'dateModal');
+                if (first) first.focus();
+            }
+        }
+        function closeAddTipModal() {
+            const overlay = document.getElementById('addTipModal');
+            if (overlay) overlay.style.display = 'none';
+        }
+        // Only load Eruda on mobile devices
+        if (window.innerWidth <= 768) {
+            eruda.init();
+            console.log('Mobile debugging console loaded');
+        }
+    </script>
+    
+    <script>
+        // Admin page specific initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            checkAdminStatus();
+            
+            // Initialize admin page
+            initializeAdminPage();
+        });
+
+        // Initialize admin page
+        function initializeAdminPage() {
+            console.log('Initializing admin page...');
+            // Setup form validation
+            const adminForm = document.getElementById('adminLoginForm');
+            if (adminForm) {
+                adminForm.addEventListener('submit', handleAdminLogin);
+            }
+
+            // Setup add tip form
+            const addTipForm = document.getElementById('addTipForm');
+            if (addTipForm) addTipForm.addEventListener('submit', handleAddTipFromAdmin);
+
+            const addTipFormModal = document.getElementById('addTipFormModal');
+            if (addTipFormModal) {
+                addTipFormModal.addEventListener('submit', function(e){
+                    e.preventDefault();
+                    // Build a synthetic event with a FormData-compatible target
+                    const tipType = document.getElementById('tipTypeSelect').value;
+                    // Map modal inputs to hidden inline form to reuse existing handler
+                    const map = [
+                        ['dateModal','date'],
+                        ['startDateModal','startDate'],
+                        ['endDateModal','endDate'],
+                        ['matchModal','match'],
+                        ['leagueModal','league'],
+                        ['timeModal','time'],
+                        ['predictionModal','prediction'],
+                        ['oddsModal','odds']
+                    ];
+                    map.forEach(([fromId,toId])=>{
+                        const from = document.getElementById(fromId);
+                        const to = document.getElementById(toId);
+                        if (from && to) to.value = from.value;
+                    });
+                    // Submit using existing handler
+                    handleAddTipFromAdmin(new Event('submit'));
+                    // Close modal
+                    closeAddTipModal();
+                    // Clear modal fields
+                    addTipFormModal.reset();
+                });
+            }
+
+            // Setup tip type selector
+            const tipTypeSelect = document.getElementById('tipTypeSelect');
+            if (tipTypeSelect) {
+                tipTypeSelect.addEventListener('change', loadTipsForManagement);
+            }
+            // Scroll to inline add form when top button clicked (fallback)
+            const btnScroll = document.getElementById('btnScrollAddTip');
+            if (btnScroll) {
+                btnScroll.addEventListener('click', function(){
+                    const el = document.getElementById('inlineAddTipSection');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
+            // Attach open handlers to any element with data-open-add-tip
+            document.querySelectorAll('[data-open-add-tip]').forEach(btn => {
+                btn.addEventListener('click', openAddTipModal);
+            });
+
+            // Tabs logic
+            document.querySelectorAll('[data-tip-tab]').forEach(tab => {
+                tab.addEventListener('click', function(){
+                    const type = this.getAttribute('data-tip-tab');
+                    document.querySelectorAll('[data-tip-tab]').forEach(t=>{
+                        const isActive = t === tab;
+                        t.classList.toggle('active', isActive);
+                        t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    });
+                    // Refresh UI for selected type
+                    if (typeof setupAdminPanel === 'function') setupAdminPanel(type);
+                    if (typeof loadTipsForManagementTab === 'function') {
+                        loadTipsForManagementTab(type);
+                    } else if (typeof loadTipsForManagement === 'function') {
+                        // Fallback to existing loader via URL param
+                        window.history.replaceState(null, '', `?type=${type}`);
+                        loadTipsForManagement();
+                    }
+                });
+            });
+
+            // Click outside modal to close
+            const overlay = document.getElementById('addTipModal');
+            if (overlay) {
+                overlay.addEventListener('click', function(e){
+                    if (e.target === overlay) {
+                        closeAddTipModal();
+                    }
+                });
+            }
+        }
+
+        // Handle admin login from admin page
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'Kastul' && password === 'Kastul@10') {
+                isAdmin = true;
+                const timestamp = Date.now();
+                sessionStorage.setItem('isAdmin', 'true');
+                sessionStorage.setItem('adminTimestamp', timestamp.toString());
+                showAdminFeatures();
+                showAdminDashboard();
+                
+                alert('Admin login successful! Welcome to the dashboard.');
+            } else {
+                alert('Invalid credentials. Please try again.');
+            }
+        }
+
+        // Show admin dashboard
+        function showAdminDashboard() {
+            const loginSection = document.getElementById('adminLoginSection');
+            const dashboard = document.getElementById('adminDashboard');
+            
+            if (loginSection) {
+                loginSection.style.display = 'none';
+            }
+            if (dashboard) {
+                dashboard.style.display = 'block';
+            }
+            
+            // Load dashboard stats
+            if (typeof loadDashboardStats === 'function') {
+                loadDashboardStats();
+            }
+            
+            // Load match results for management
+            if (typeof loadMatchResultsForAdmin === 'function') {
+                loadMatchResultsForAdmin();
+            }
+            
+            // Load initial tips
+            if (typeof loadTipsForManagement === 'function') {
+                loadTipsForManagement();
+            }
+
+            // Ensure admin form fields reflect active tab
+            const activeType = document.querySelector('.tip-tab.active')?.getAttribute('data-tip-tab') || 'today';
+            if (typeof setupAdminPanel === 'function') {
+                setupAdminPanel(activeType);
+            }
+            
+            // Mobile optimization
+            if (window.innerWidth <= 768) {
+                console.log('Mobile device detected in admin panel');
+                if (typeof optimizeForMobile === 'function') {
+                    optimizeForMobile();
+                }
+            }
+        }
+
+        // Handle add tip from admin page
+        function handleAddTipFromAdmin(e) {
+            e.preventDefault();
+            
+            const tipType = document.querySelector('.tip-tab.active')?.getAttribute('data-tip-tab') || 'today';
+            handleAddTip(e, tipType);
+        }
+
+        // Load tips for management
+        async function loadTipsForManagement() {
+            const params = new URLSearchParams(window.location.search);
+            const tipType = params.get('type') || 'today';
+            const tips = await getTipsData(tipType);
+            displayTipsForManagement(tips, tipType);
+        }
+
+        async function loadTipsForManagementTab(type) {
+            const tips = await getTipsData(type);
+            displayTipsForManagement(tips, type);
+        }
+
+        // Display tips for management
+        function displayTipsForManagement(tips, type) {
+            const container = document.getElementById('tipsManagementContainer');
+            
+            if (tips.length === 0) {
+                container.innerHTML = `
+                    <div class="no-tips">
+                        <p>No ${type} tips found. Add some tips using the form above.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = tips.map(tip => `
+                <div class="tip-management-item">
+                    <div class="tip-info">
+                        <div class="tip-match">${tip.match}</div>
+                        <div class="tip-details">
+                            <span class="tip-league">${tip.league}</span>
+                            <span class="tip-time">${tip.time}</span>
+                            <span class="tip-prediction">${tip.prediction}</span>
+                            <span class="tip-odds">${tip.odds}</span>
+                            <span class="tip-status">
+                                <span class="status-badge ${tip.status === 'won' ? 'status-won' : tip.status === 'lost' ? 'status-lost' : 'status-pending'}">
+                                    ${tip.status === 'won' ? '✅' : tip.status === 'lost' ? '❌' : '⏳'} ${(tip.status || 'pending').toUpperCase()}
+                                </span>
+                            </span>
+                        </div>
+                        <div class="tip-date">${tip.date}</div>
+                    </div>
+                    <div class="tip-actions">
+                        <button class="btn btn-secondary" onclick="editTip('${type}', ${tip.id})">Edit</button>
+                        <button class="btn btn-warning" onclick="quickUpdateStatus('${type}', ${tip.id})">Update Status</button>
+                        <button class="btn btn-danger" onclick="deleteTip('${type}', ${tip.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+
+    <!-- Add Tip Modal -->
+    <div id="addTipModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="addTipTitle">
+        <div class="modal">
+            <div class="modal-header">
+                <h4 id="addTipTitle" class="modal-title">➕ Add New Tip</h4>
+                <button class="modal-close" onclick="closeAddTipModal()" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addTipFormModal">
+                    <div class="tip-form">
+                        <div class="form-group" id="singleDateGroupModal">
+                            <label for="dateModal">Date:</label>
+                            <input type="date" id="dateModal" name="date">
+                        </div>
+                        <div class="form-group" id="dateRangeGroupModal" style="display:none;">
+                            <label for="startDateModal">Start Date:</label>
+                            <input type="date" id="startDateModal" name="startDate">
+                        </div>
+                        <div class="form-group" id="endDateGroupModal" style="display:none;">
+                            <label for="endDateModal">End Date:</label>
+                            <input type="date" id="endDateModal" name="endDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="matchModal">Match:</label>
+                            <input type="text" id="matchModal" name="match" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="leagueModal">League:</label>
+                            <input type="text" id="leagueModal" name="league" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="timeModal">Time:</label>
+                            <input type="text" id="timeModal" name="time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="predictionModal">Prediction:</label>
+                            <input type="text" id="predictionModal" name="prediction" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="oddsModal">Odds:</label>
+                            <input type="text" id="oddsModal" name="odds" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Tip</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Add Button -->
+    <button id="fabAddTip" class="floating-add-btn" title="Add Tip" data-open-add-tip>+</button>
+</body>
+</html>

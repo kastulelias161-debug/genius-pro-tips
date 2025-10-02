@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Genius Tips</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo" id="logo">Genius Tips</h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="contact.html" class="nav-link">Contact Us</a>
+                <a href="privacy.html" class="nav-link active">Privacy Policy</a>
+                <a href="terms.html" class="nav-link">Terms & Conditions</a>
+                <a href="#" class="nav-link" onclick="logout()" id="logoutBtn" style="display: none;">Logout</a>
+            </nav>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Mobile Navigation -->
+            <nav class="mobile-nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="contact.html" class="nav-link">Contact Us</a>
+                <a href="privacy.html" class="nav-link active">Privacy Policy</a>
+                <a href="terms.html" class="nav-link">Terms & Conditions</a>
+                <a href="#" class="nav-link" onclick="logout()" id="logoutBtnMobile" style="display: none;">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="page-content">
+                <h1 class="page-title">Privacy Policy</h1>
+                <p class="last-updated">Last updated: January 15, 2024</p>
+                
+                <div class="policy-content">
+                    <section class="policy-section">
+                        <h3>1. Information We Collect</h3>
+                        <p>We collect information you provide directly to us, such as when you:</p>
+                        <ul>
+                            <li>Contact us through our contact form</li>
+                            <li>Access our website and view our tips</li>
+                            <li>Use our admin panel (authorized personnel only)</li>
+                        </ul>
+                        <p>This information may include your name, email address, phone number, and any messages you send us.</p>
+                    </section>
+
+                    <section class="policy-section">
+                        <h3>2. How We Use Your Information</h3>
+                        <p>We use the information we collect to:</p>
+                        <ul>
+                            <li>Provide and maintain our betting tips service</li>
+                            <li>Respond to your inquiries and provide customer support</li>
+                            <li>Improve our website and services</li>
+                            <li>Comply with legal obligations</li>
+                        </ul>
+                    </section>
+
+                    <section class="policy-section">
+                        <h3>3. Information Sharing</h3>
+                        <p>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except:</p>
+                        <ul>
+                            <li>When required by law</li>
+                            <li>To protect our rights and safety</li>
+                            <li>With service providers who assist us in operating our website</li>
+                        </ul>
+                    </section>
+
+                    <section class="policy-section">
+                        <h3>4. Data Security</h3>
+                        <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is 100% secure.</p>
+                    </section>
+
+                    <section class="policy-section">
+                        <h3>5. Cookies and Tracking</h3>
+                        <p>Our website may use cookies to enhance your browsing experience. Cookies are small files stored on your device that help us remember your preferences and improve our service.</p>
+                    </section>
+
+                    <section class="policy-section">
+                        <h3>6. Your Rights</h3>
+                        <p>You have the right to:</p>
+                        <ul>
+                            <li>Access your personal information</li>
+                            <li>Correct inaccurate information</li>
+                            <li>Request deletion of your information</li>
+                            <li>Opt-out of communications from us</li>
+                        </ul>
+                    </section>
+
+                    <section class="policy-section">
+                        <h3>7. Changes to This Policy</h3>
+                        <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date.</p>
+                    </section>
+
+                    <section class="policy-section">
+                        <h3>8. Contact Us</h3>
+                        <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+                        <div class="contact-info">
+                            <p><strong>Email:</strong> <a href="mailto:privacy@geniustips.com">privacy@geniustips.com</a></p>
+                            <p><strong>Phone:</strong> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAdminModal()">&times;</span>
+            <h2>Admin Login</h2>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Genius Tips. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+# ads.txt for Genius Pro Tips
+google.com, pub-2565386197658799, DIRECT, f08c47fec0942fa0
