@@ -912,39 +912,6 @@ body {
     line-height: 1.6;
 }
 
-/* Ad Container Styles */
-.ad-container {
-    margin: 2rem 0;
-    text-align: center;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-}
-
-.ad-banner-top {
-    margin-top: 1rem;
-    margin-bottom: 2rem;
-}
-
-.ad-banner-bottom {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-}
-
-/* AdSense responsive styles */
-.adsbygoogle {
-    display: block;
-    margin: 0 auto;
-}
-
-/* Hide ads on very small screens to maintain UX */
-@media (max-width: 320px) {
-    .ad-container {
-        display: none;
-    }
-}
-
 /* Footer */
 .footer {
     background-color: #2c5530;
